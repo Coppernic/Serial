@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+        android:key="cat_flow"
+        android:title="@string/category_flow_control_title" >
+        <!--CheckBoxPreference
+            android:defaultValue="false"
+            android:key="pref_rts"
+            android:title="@string/pref_rts_title" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="pref_cts"
+            android:title="@string/pref_cts_title" /-->
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="pref_ascii"
+            android:title="@string/pref_ascii_title"
+            android:summary="@string/pref_ascii_summary" />
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:key="cat_line_ending"
+        android:summary="@string/category_line_ending_summary"
+        android:title="@string/category_line_ending_title"
+        android:dependency="pref_ascii">
+        <ListPreference
+            android:key="pref_line_ending"
+            android:title="@string/pref_line_ending"
+            android:dialogTitle="@string/category_line_ending_title"
+            android:entries="@array/pref_line_ending_entries"
+            android:entryValues="@array/pref_line_ending_values"
+            android:defaultValue="@string/pref_line_ending_default" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:key="pref_header_log"
+        android:title="@string/pref_header_log" >
+        <!--CheckBoxPreference
+            android:defaultValue="false"
+            android:key="@string/pref_show_frames_key"
+            android:title="@string/pref_show_frames_title" /-->
+        <EditTextPreference
+            android:defaultValue="2000"
+            android:inputType="number"
+            android:key="pref_nb_item_log"
+            android:maxLines="1"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="@string/pref_nb_item_log" />
+
+        <!--CheckBoxPreference
+            android:defaultValue="false"
+            android:dependency="pref_ascii"
+            android:key="pref_log_in_file"
+            android:title="@string/pref_log_in_file" /-->
+    </PreferenceCategory>
+</PreferenceScreen>

@@ -27,4 +27,50 @@
         <item>600</item>
         <item>300</item>
     </string-array>
+
+
+    <string name="pref_rts_sum">Use RTS</string>
+    <string name="pref_rts_title">RTS</string>
+    <string name="pref_cts_sum">Use CTS</string>
+    <string name="pref_cts_title">CTS</string>
+    <string name="pref_ascii_sum">Use ASCII</string>
+    <string name="pref_ascii_title">ASCII</string>
+    <string name="pref_ascii_summary">Send characters as is (otherwise hexa value is sent)</string>
+    <string name="pref_ftdi_title">FTDI</string>
+    <string name="pref_show_frames_key">pref_show_frames</string>
+    <string name="pref_show_frames_title">Show frames</string>
+    <string name="pref_ftdi_switch_on">On</string>
+    <string name="pref_ftdi_swith_off">Off</string>
+    <string name="pref_line_ending">Choose your line ending</string>
+    <string name="category_devices_title">Devices</string>
+    <string name="category_flow_control_title">Flow Control</string>
+    <string name="category_line_ending_title">Line ending</string>
+    <string name="category_line_ending_summary">Warning : each option is incompatible with each other</string>
+    <string name="pref_use_line_ending_title">Append line ending</string>
+    <string name="pref_wline_ending_title">Windows line ending</string>
+    <string name="pref_wline_ending_summary">Send \"\\r\\n\" at end of command</string>
+    <string name="pref_uline_ending_title">Unix line ending</string>
+    <string name="pref_uline_ending_summary">Send \"\\n\" at end of command</string>
+    <string name="pref_rline_ending_title">CR line ending</string>
+    <string name="pref_rline_ending_summary">Send \"\\r\" at end of command</string>
+    <string name="dial_opt">Options</string>
+    <string name="pref_header_log">Log options</string>
+    <string name="pref_nb_item_log">Nb item in log list</string>
+    <string name="pref_log_in_file">Log in file</string>
+    <string name="test_exp_port">Expansion port test :</string>
+    <string name="test_imei">IMEI test :</string>
+
+    <string-array name="pref_line_ending_entries">
+        <item>None</item>
+        <item>\"\\r\\n\"</item>
+        <item>\"\\n\"</item>
+        <item>\"\\r\"</item>
+    </string-array>
+    <string-array name="pref_line_ending_values">
+        <item>none</item>
+        <item>rn</item>
+        <item>n</item>
+        <item>r</item>
+    </string-array>
+    <string name="pref_line_ending_default">none</string>
 </resources>

@@ -30,10 +30,13 @@ dependencies {
     compile "com.android.support:appcompat-v7:$support"
     compile "com.android.support:design:$support"
     compile "com.android.support:support-vector-drawable:$support"
+    compile "com.android.support:support-v4:$support"
+    compile "com.android.support:preference-v7:$support"
 
-    compile(group: 'fr.coppernic.sdk.core', name: 'CpcCore', version: '1.0.0', ext: 'aar')
+    compile(group: 'fr.coppernic.sdk.core', name: 'CpcCore', version: '1.0.0', ext: 'aar') {
+        transitive = true
+    }
     compile(group: 'fr.coppernic.sdk.cpcutils', name: 'CpcUtilsLib', version: '6.7.0', ext: 'aar')
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
-    compile 'com.android.support:support-v4:25.3.1'
     testCompile 'junit:junit:4.12'
 }
