@@ -42,6 +42,7 @@ import fr.coppernic.sdk.serial.SerialCom;
 import fr.coppernic.sdk.serial.SerialFactory;
 import fr.coppernic.sdk.serial.utils.DataListener;
 import fr.coppernic.sdk.serial.utils.SerialThreadListener;
+import fr.coppernic.sdk.utils.core.CpcBytes;
 import fr.coppernic.sdk.utils.core.CpcString;
 import fr.coppernic.sdk.utils.debug.L;
 import fr.coppernic.sdk.utils.helpers.CpcUsb;
@@ -493,16 +494,19 @@ public class TerminalFragment extends BaseFragment {
 
     private void sendBytes(CharSequence cmd) {
 
-        String[] bytes = cmd.toString().split(" ");
-        byte[] tx = new byte[bytes.length];
+        String[] strByte = cmd.toString().split(" ");
+        List<byte[]> byteList = new ArrayList<>();
 
-        for (int i = 0; i < bytes.length; i++) {
+        for (String s : strByte) {
             try {
-                tx[i] = (byte) Integer.parseInt(bytes[i], 16);
+                byteList.add(CpcBytes.parseHexStringToArray(s));
             } catch (NumberFormatException e) {
+                Log.e(TAG, e.toString());
+            } catch (NullPointerException e) {
                 Log.e(TAG, e.toString());
             }
         }
+        byte[] tx = CpcBytes.contactByteArrays(byteList);
         serial.send(tx, tx.length);
     }
 
