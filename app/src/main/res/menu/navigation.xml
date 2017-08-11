@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/navigation_terminal"
+        android:icon="@drawable/ic_console_black_24dp"
+        android:title="@string/title_terminal"/>
+
+    <item
+        android:id="@+id/navigation_transparent"
+        android:icon="@drawable/ic_console_line_black_24dp"
+        android:title="@string/title_transparent"/>
+
+    <item
+        android:id="@+id/navigation_config"
+        android:icon="@drawable/ic_settings_black_24dp"
+        android:title="@string/title_config"/>
+
+</menu>
