@@ -20,8 +20,8 @@ import java.util.TreeSet;
  */
 public class BoundaryArrayAdapter<T> extends ArrayAdapter<T> {
 
-    private int nbMaxItem = -1;
     private final List<T> objs = new ArrayList<>();
+    private int nbMaxItem = -1;
 
     public BoundaryArrayAdapter(Context context, int resource) {
         super(context, resource);

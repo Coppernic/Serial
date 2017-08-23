@@ -32,6 +32,10 @@ dependencies {
     compile "com.android.support:support-vector-drawable:$support"
     compile "com.android.support:support-v4:$support"
     compile "com.android.support:preference-v7:$support"
+    compile 'com.jakewharton:butterknife:8.8.1'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
+
+
 
     compile(group: 'fr.coppernic.sdk.core', name: 'CpcCore', version: '1.0.0', ext: 'aar') {
         transitive = true

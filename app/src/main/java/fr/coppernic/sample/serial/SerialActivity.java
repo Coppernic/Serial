@@ -11,8 +11,6 @@ import android.view.inputmethod.InputMethodManager;
 
 public class SerialActivity extends AppCompatActivity {
 
-    private InputMethodManager imm;
-
     private final BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
         = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
@@ -33,6 +31,7 @@ public class SerialActivity extends AppCompatActivity {
         }
 
     };
+    private InputMethodManager imm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -8,4 +8,6 @@
     <!-- 0x0403 / 0x6015: FTDI FT231X -->
     <usb-device vendor-id="1027" product-id="24597" />
 
+    <!-- 0x0403 / 0x6532: FTDI GSMR -->
+    <usb-device vendor-id="1027" product-id="25906" />
 </resources>

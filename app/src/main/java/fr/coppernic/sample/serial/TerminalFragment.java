@@ -78,8 +78,6 @@ public class TerminalFragment extends BaseFragment {
     private SharedPreferences mPrefs = null;
     private SerialThreadListener threadListener = null;
     private UiHandler uiHandler = new UiHandler();
-    private AutoCompleteTextView edtCmd = null;
-    private HistoryAdapter mHistoryAdapter = null;
     private final DataListener dataListener = new DataListener() {
         @Override
         public void onDataReceived(byte[] bytes) {
@@ -95,6 +93,8 @@ public class TerminalFragment extends BaseFragment {
             }
         }
     };
+    private AutoCompleteTextView edtCmd = null;
+    private HistoryAdapter mHistoryAdapter = null;
     private UsbManager usbManager = null;
     private TreeSet<String> devSet = new TreeSet<>();
     private List<String> directList = new ArrayList<>();
@@ -121,6 +121,9 @@ public class TerminalFragment extends BaseFragment {
         public void onCreated(SerialCom serialCom) {
             ftdi = serialCom;
             ftdiList = Arrays.asList(ftdi.listDevices());
+            for (String s : ftdiList) {
+                Log.d(TAG, s);
+            }
             listDevices();
         }
 
@@ -183,14 +186,7 @@ public class TerminalFragment extends BaseFragment {
         }
 
         private boolean isHexaLetter(char c) {
-
-            if (c >= 'a' && c <= 'f') {
-                return true;
-            } else if (c >= 'A' && c <= 'F') {
-                return true;
-            } else {
-                return false;
-            }
+            return c >= 'a' && c <= 'f' || c >= 'A' && c <= 'F';
         }
     };
 
@@ -240,7 +236,7 @@ public class TerminalFragment extends BaseFragment {
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu,  MenuInflater inflater) {
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         // Inflate the menu; this adds items to the action bar if it is present.
         inflater.inflate(R.menu.menu, menu);
     }
@@ -266,10 +262,8 @@ public class TerminalFragment extends BaseFragment {
     public void onStart() {
         super.onStart();
 
-        logAdapter.setMaxItem(Integer.parseInt(mPrefs.getString("pref_nb_item_log", "1000")));
         CpcUsb.registerUsbReceiver(getContext(), usbReceiver);
-
-        logAdapter.setMaxItem(Integer.parseInt(mPrefs.getString("pref_nb_item_log", "-1")));
+        logAdapter.setMaxItem(Integer.parseInt(mPrefs.getString("pref_nb_item_log", "1000")));
 
         if (isAscii()) {
             edtCmd.setFilters(new InputFilter[]{});
@@ -302,14 +296,14 @@ public class TerminalFragment extends BaseFragment {
             .apply();
     }
 
-    private void clear(){
+    private void clear() {
         L.m(TAG, DEBUG);
         logAdapter.clear();
         logAdapter.notifyDataSetChanged();
         saveState();
     }
 
-    private void openClose(){
+    private void openClose() {
         if (serial != null && serial.isOpened()) {
             close();
         } else {
@@ -318,7 +312,7 @@ public class TerminalFragment extends BaseFragment {
 
     }
 
-    private void enable(boolean b){
+    private void enable(boolean b) {
         edtCmd.setEnabled(b);
         if (!b) {
             uiHandler.postDelayed(new Runnable() {
@@ -332,7 +326,7 @@ public class TerminalFragment extends BaseFragment {
         }
     }
 
-    private void setUp(){
+    private void setUp() {
         SerialFactory.getDirectInstance(getActivity(), directListener);
 
         CpcUsb.displayUsbDeviceList(getContext());
@@ -340,7 +334,8 @@ public class TerminalFragment extends BaseFragment {
 
         for (UsbDevice dev : devList) {
             int pid = dev.getProductId();
-            if (pid == Constants.PID_FTDI_FT231X || pid == Constants.PID_FTDI_FT232R) {
+
+            if (Constants.PIDS_FTDI.contains(dev.getProductId())) {
                 if (!usbManager.hasPermission(dev)) {
                     CpcUsb.getUsbAuthorization(getContext(), pid, dev.getVendorId(), null, 10000);
                 } else {
@@ -393,7 +388,6 @@ public class TerminalFragment extends BaseFragment {
     }
 
     private void listDevices() {
-
         Log.v(TAG, "List devices");
         devSet = new TreeSet<>();
         devSet.addAll(directList);
@@ -417,7 +411,7 @@ public class TerminalFragment extends BaseFragment {
         spBaudRates.setSelection(bdtPos);
     }
 
-    private void open(){
+    private void open() {
         String device = spDevices.getSelectedItem().toString();
 
         if (direct != null && CpcString.isStringInArray(direct.listDevices(), device)) {
@@ -431,7 +425,7 @@ public class TerminalFragment extends BaseFragment {
 
         int bdt = Integer.parseInt(spBaudRates.getSelectedItem().toString());
         //TODO consider doing an open in an other thread
-        if(serial.open(device, bdt) != 0){
+        if (serial.open(device, bdt) != 0) {
             Toast.makeText(getContext(), "Open fail !", Toast.LENGTH_SHORT).show();
         } else {
             btnOpenClose.setText(R.string.close);
@@ -442,13 +436,13 @@ public class TerminalFragment extends BaseFragment {
         }
     }
 
-    private void close(){
+    private void close() {
 
         enable(false);
-        if(serial != null){
+        if (serial != null) {
             serial.close();
         }
-        if(threadListener != null){
+        if (threadListener != null) {
             threadListener.stop();
         }
         btnOpenClose.setText(R.string.open);
