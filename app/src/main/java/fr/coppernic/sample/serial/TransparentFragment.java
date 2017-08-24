@@ -5,6 +5,8 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -14,8 +16,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ListView;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.List;
@@ -23,13 +25,13 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import fr.coppernic.sample.serial.adapters.BoundaryArrayAdapter;
 import fr.coppernic.sample.serial.helpers.SerialHelper;
 import fr.coppernic.sdk.serial.SerialCom;
 import fr.coppernic.sdk.serial.utils.DataListener;
 import fr.coppernic.sdk.serial.utils.SerialThreadListener;
 import fr.coppernic.sdk.utils.core.CpcBytes;
 import fr.coppernic.sdk.utils.debug.L;
+import fr.coppernic.sdk.utils.ui.TextAppender;
 import fr.coppernic.sdk.utils.ui.UiHandler;
 
 
@@ -56,10 +58,12 @@ public class TransparentFragment extends BaseFragment {
     Spinner spBaudRatesRemote = null;
     @BindView(R.id.buttonOpenClose)
     Button btnOpenClose = null;
-    @BindView(R.id.listView1)
-    ListView listView = null;
+    //@BindView(R.id.listView1)
+    //ListView listView = null;
+    @BindView(R.id.log)
+    TextView tvLog;
     private SharedPreferences mPrefs = null;
-    private BoundaryArrayAdapter<String> logAdapter = null;
+    //private BoundaryArrayAdapter<String> logAdapter = null;
     private SerialHelper helperLocal;
     private SerialHelper helperRemote;
     private SerialCom serialLocal = null;
@@ -70,7 +74,8 @@ public class TransparentFragment extends BaseFragment {
             synchronized (TransparentFragment.this) {
                 if (serialLocal.isOpened()) {
                     serialLocal.send(bytes, bytes.length);
-                    handleLog("<< ", bytes);
+                    //handleLog("<< ", bytes);
+                    handleLog("", bytes, R.color.colorRemote);
                 } else {
                     Log.d(TAG, "Serial is not opened");
                 }
@@ -87,7 +92,8 @@ public class TransparentFragment extends BaseFragment {
             synchronized (TransparentFragment.this) {
                 if (serialRemote.isOpened()) {
                     serialRemote.send(bytes, bytes.length);
-                    handleLog(">> ", bytes);
+                    //handleLog(">> ", bytes);
+                    handleLog("", bytes, R.color.colorLocal);
                 } else {
                     Log.d(TAG, "Serial is not opened");
                 }
@@ -113,8 +119,9 @@ public class TransparentFragment extends BaseFragment {
 
         mPrefs = PreferenceManager.getDefaultSharedPreferences(getContext());
 
-        logAdapter = new BoundaryArrayAdapter<>(getContext(), R.layout.list_dropdown_item);
-        listView.setAdapter(logAdapter);
+        tvLog.setMovementMethod(new ScrollingMovementMethod());
+        //logAdapter = new BoundaryArrayAdapter<>(getContext(), R.layout.list_dropdown_item);
+        //listView.setAdapter(logAdapter);
         //logAdapter.addAll(mPrefs.getStringSet(KEY_LOGS, Collections.<String>emptySet()));
 
         return view;
@@ -147,7 +154,8 @@ public class TransparentFragment extends BaseFragment {
     public void onStart() {
         super.onStart();
 
-        logAdapter.setMaxItem(Integer.parseInt(mPrefs.getString("pref_nb_item_log", "1000")));
+        tvLog.setMaxLines(Integer.parseInt(mPrefs.getString("pref_nb_item_log", "10000")));
+        //logAdapter.setMaxItem(Integer.parseInt(mPrefs.getString("pref_nb_item_log", "1000")));
         setUp();
     }
 
@@ -180,8 +188,9 @@ public class TransparentFragment extends BaseFragment {
 
     private void clear() {
         L.m(TAG, DEBUG);
-        logAdapter.clear();
-        logAdapter.notifyDataSetChanged();
+        tvLog.setText("");
+        //logAdapter.clear();
+        //logAdapter.notifyDataSetChanged();
         saveState();
     }
 
@@ -279,11 +288,31 @@ public class TransparentFragment extends BaseFragment {
                 if (DEBUG) {
                     Log.d(TAG, log);
                 }
-                logAdapter.add(log);
-                logAdapter.notifyDataSetChanged();
-                listView.setSelection(logAdapter.getCount() - 1);
+                //logAdapter.add(log);
+                //logAdapter.notifyDataSetChanged();
+                //listView.setSelection(logAdapter.getCount() - 1);
             }
         });
+    }
+
+    private void handleLog(final String prefix, byte[] data, int colorId) {
+        final String log = prefix + CpcBytes.byteArrayToAsciiString(data) + "\n";
+        int color = ContextCompat.getColor(getContext(), colorId);
+
+        uiHandler.post(new TextAppender(tvLog, log, color));
+        /*
+        uiHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                if (DEBUG) {
+                    Log.d(TAG, log);
+                }
+                //logAdapter.add(log);
+                //logAdapter.notifyDataSetChanged();
+                //listView.setSelection(logAdapter.getCount() - 1);
+            }
+        });
+        */
     }
 
 }

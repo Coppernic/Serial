@@ -11,27 +11,29 @@
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
         android:ellipsize="marquee"
         android:fadingEdge="horizontal"
         android:text="@string/local_serial_port"
-        android:layout_marginStart="8dp"
+        android:textColor="@color/colorLocal"
         app:layout_constraintLeft_toRightOf="@+id/buttonOpenClose"
-        android:layout_marginLeft="8dp"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="8dp"/>
+        app:layout_constraintTop_toTopOf="parent"/>
 
     <TextView
         android:id="@+id/textView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
         android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
         android:ellipsize="marquee"
         android:fadingEdge="horizontal"
         android:text="@string/remote_serial_port"
-        android:layout_marginTop="8dp"
-        app:layout_constraintTop_toBottomOf="@+id/spinBdtLocal"
+        android:textColor="@color/colorRemote"
         app:layout_constraintLeft_toRightOf="@+id/buttonOpenClose"
-        android:layout_marginLeft="8dp"/>
+        app:layout_constraintTop_toBottomOf="@+id/spinBdtLocal"/>
 
     <Spinner
         android:id="@+id/spinBdtLocal"
@@ -110,7 +112,7 @@
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"/>
 
-    <ListView
+    <!--ListView
         android:id="@+id/listView1"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
@@ -121,6 +123,22 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/divider"/>
+        app:layout_constraintTop_toBottomOf="@+id/divider"/-->
+
+    <TextView
+        android:id="@+id/log"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/divider"
+        android:maxLines="10000"
+        android:scrollbars="vertical"
+        android:gravity="bottom"/>
 
 </android.support.constraint.ConstraintLayout>

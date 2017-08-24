@@ -21,6 +21,7 @@ import fr.coppernic.sdk.utils.helpers.CpcUsb;
 import fr.coppernic.sdk.utils.io.InstanceListener;
 
 /**
+ * //TODO use Serial Helper from CpcCore if any
  * <p>Created on 23/08/17
  *
  * @author bastien
