@@ -2,6 +2,11 @@ import org.apache.commons.io.FilenameUtils
 
 apply plugin: 'com.android.application'
 
+versioning {
+    dirty = { version -> "$version"}
+    displayMode = 'base'
+}
+
 group = "fr.coppernic.sample"
 version = versioning.info.display
 
