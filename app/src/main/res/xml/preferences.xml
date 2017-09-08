@@ -3,7 +3,7 @@
 
     <PreferenceCategory
         android:key="cat_flow"
-        android:title="@string/category_flow_control_title" >
+        android:title="@string/category_flow_control_title">
         <!--CheckBoxPreference
             android:defaultValue="false"
             android:key="pref_rts"
@@ -15,26 +15,26 @@
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="pref_ascii"
-            android:title="@string/pref_ascii_title"
-            android:summary="@string/pref_ascii_summary" />
+            android:summary="@string/pref_ascii_summary"
+            android:title="@string/pref_ascii_title"/>
     </PreferenceCategory>
     <PreferenceCategory
+        android:dependency="pref_ascii"
         android:key="cat_line_ending"
         android:summary="@string/category_line_ending_summary"
-        android:title="@string/category_line_ending_title"
-        android:dependency="pref_ascii">
+        android:title="@string/category_line_ending_title">
         <ListPreference
-            android:key="pref_line_ending"
-            android:title="@string/pref_line_ending"
+            android:defaultValue="@string/pref_line_ending_default"
             android:dialogTitle="@string/category_line_ending_title"
             android:entries="@array/pref_line_ending_entries"
             android:entryValues="@array/pref_line_ending_values"
-            android:defaultValue="@string/pref_line_ending_default" />
+            android:key="pref_line_ending"
+            android:title="@string/pref_line_ending"/>
     </PreferenceCategory>
 
     <PreferenceCategory
         android:key="pref_header_log"
-        android:title="@string/pref_header_log" >
+        android:title="@string/pref_header_log">
         <!--CheckBoxPreference
             android:defaultValue="false"
             android:key="@string/pref_show_frames_key"
@@ -46,7 +46,7 @@
             android:maxLines="1"
             android:selectAllOnFocus="true"
             android:singleLine="true"
-            android:title="@string/pref_nb_item_log" />
+            android:title="@string/pref_nb_item_log"/>
 
         <!--CheckBoxPreference
             android:defaultValue="false"

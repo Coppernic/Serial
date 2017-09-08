@@ -30,16 +30,42 @@ public class SerialHelper {
     private static final String TAG = "SerialHelper";
 
     private final Context context;
+    private final BroadcastReceiver usbReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
+                SerialFactory.getFtdiInstance(context, ftdiListener);
+            }
+            try {
+                SerialHelper.this.context.unregisterReceiver(usbReceiver);
+            } catch (Exception ignore) {
 
+            }
+        }
+    };
     private SerialCom direct = null;
     private SerialCom ftdi = null;
-
     private UsbManager usbManager = null;
     private TreeSet<String> devSet = new TreeSet<>();
     private List<String> directList = new ArrayList<>();
     private List<String> ftdiList = new ArrayList<>();
-
     private GetDeviceListCallBack getDeviceListCallBack;
+    private final InstanceListener<SerialCom> directListener = new InstanceListener<SerialCom>() {
+        @Override
+        public void onCreated(SerialCom serialCom) {
+            direct = serialCom;
+            directList = Arrays.asList(direct.listDevices());
+            getDeviceList(getDeviceListCallBack);
+        }
+
+        @Override
+        public void onDisposed(SerialCom serialCom) {
+            if (direct == serialCom) {
+                direct = null;
+                directList.clear();
+            }
+        }
+    };
     private final InstanceListener<SerialCom> ftdiListener = new InstanceListener<SerialCom>() {
         @Override
         public void onCreated(SerialCom serialCom) {
@@ -56,35 +82,6 @@ public class SerialHelper {
             if (ftdi == serialCom) {
                 ftdi = null;
                 ftdiList.clear();
-            }
-        }
-    };
-    private final BroadcastReceiver usbReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
-                SerialFactory.getFtdiInstance(context, ftdiListener);
-            }
-            try {
-                SerialHelper.this.context.unregisterReceiver(usbReceiver);
-            } catch (Exception ignore) {
-
-            }
-        }
-    };
-    private final InstanceListener<SerialCom> directListener = new InstanceListener<SerialCom>() {
-        @Override
-        public void onCreated(SerialCom serialCom) {
-            direct = serialCom;
-            directList = Arrays.asList(direct.listDevices());
-            getDeviceList(getDeviceListCallBack);
-        }
-
-        @Override
-        public void onDisposed(SerialCom serialCom) {
-            if (direct == serialCom) {
-                direct = null;
-                directList.clear();
             }
         }
     };
