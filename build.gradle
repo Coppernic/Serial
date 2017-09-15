@@ -12,7 +12,7 @@ buildscript {
 }
 
 plugins {
-    id 'net.nemerosa.versioning' version '2.6.0'
+    id 'fr.coppernic.versioning' version '3.1.0'
 }
 
 allprojects {
