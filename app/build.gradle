@@ -7,7 +7,7 @@ versioning {
     displayMode = 'base'
 }
 
-group = "fr.coppernic.sample"
+group = "fr.coppernic.samples"
 version = versioning.info.display
 
 android {
@@ -17,8 +17,8 @@ android {
         applicationId "fr.coppernic.sample.serial"
         minSdkVersion 17
         targetSdkVersion 25
-        versionCode 1
-        versionName "1.0"
+        versionCode versioning.info.versionCode
+        versionName versioning.info.display
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
     }
