@@ -16,9 +16,6 @@ import android.text.Spanned;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -29,13 +26,19 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.MaterialDialog;
+
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.TreeSet;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import fr.coppernic.sample.serial.adapters.BoundaryArrayAdapter;
 import fr.coppernic.sample.serial.adapters.HistoryAdapter;
 import fr.coppernic.sdk.serial.SerialCom;
@@ -66,14 +69,100 @@ public class TerminalFragment extends BaseFragment {
     private final static String KEY_PREF_U_LINE_ENDING = "n"; //Unix
     private final static String KEY_PREF_R_LINE_ENDING = "r"; //cr
     private final static String KEY_PREF_LINE_ENDING = "pref_line_ending";
+    private final static CharSequence KEY_RTS = "Rts";
+    private final static CharSequence KEY_XON_XOFF = "Xon Xoff";
+    private final static CharSequence KEY_HARD_FLOW_CONTROL = "Hardware Flow Control";
+    // Same order than in string.xml
+    private final static CharSequence[] optKeys = {KEY_RTS,
+                                                   KEY_XON_XOFF,
+                                                   KEY_HARD_FLOW_CONTROL};
+    private final HashMap<CharSequence, Boolean> mapOpt = new HashMap<>();
+    private final BroadcastReceiver usbReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
+                SerialFactory.getFtdiInstance(getContext(), ftdiListener);
+            }
+        }
+    };
+    private final InputFilter mHexaFilter = new InputFilter() {
 
-    private Spinner spDevices = null;
-    private Spinner spBaudRates = null;
-    private Button btnOpenClose = null;
+        @Override
+        public CharSequence filter(CharSequence source, int start, int end,
+                                   Spanned dest, int dstart, int dend) {
+
+            if (source.length() == 0) {
+                return null;
+            } else {
+                StringBuilder sb = new StringBuilder();
+                for (int i = start; i < end; i++) {
+                    if (Character.isDigit(source.charAt(i))
+                        || Character.isWhitespace(source.charAt(i))
+                        || isHexaLetter(source.charAt(i))) {
+                        sb.append(source.charAt(i));
+                    } else {
+                        Log.w(TAG,
+                              "Wrong character supplied : "
+                              + source.charAt(i) + " at index "
+                              + Integer.toString(i));
+                    }
+                }
+                return sb.toString();
+            }
+        }
+
+        private boolean isHexaLetter(char c) {
+            return c >= 'a' && c <= 'f' || c >= 'A' && c <= 'F';
+        }
+    };
+    private final MaterialDialog.ListCallbackMultiChoice optChoices = new MaterialDialog.ListCallbackMultiChoice() {
+        @Override
+        public boolean onSelection(MaterialDialog dialog, Integer[] which, CharSequence[] text) {
+
+            if (serial != null && serial.isOpened()) {
+                resetOptMap();
+                for (CharSequence t : text) {
+                    if (DEBUG) {
+                        Log.v(TAG, t + " -> true");
+                    }
+                    mapOpt.put(t, true);
+                }
+
+                serial.setRts(mapOpt.get(KEY_RTS));
+                serial.setHardwareFlowControl(mapOpt.get(KEY_HARD_FLOW_CONTROL));
+                serial.setXonXoff(mapOpt.get(KEY_XON_XOFF));
+            }
+            return true;
+        }
+    };
+    @BindView(R.id.spDev)
+    Spinner spDevices;
+    @BindView(R.id.spBdt)
+    Spinner spBaudRates;
+    @BindView(R.id.btnOpenClose)
+    Button btnOpenClose;
+    @BindView(R.id.listview1)
+    ListView listView;
+    private final TextView.OnEditorActionListener actionListener = new TextView.OnEditorActionListener() {
+
+        @Override
+        public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+
+            if (v.getText().length() == 0) {
+                return false;
+            }
+            send(v.getText());
+            addLineInHistory(v.getText());
+            handleDataSent(v.getText().toString());
+            v.setText("");
+            return true;
+        }
+    };
     private SerialCom direct = null;
     private SerialCom ftdi = null;
     private SerialCom serial = null;
-    private ListView listView = null;
+    @BindView(R.id.autoCompleteTextView)
+    AutoCompleteTextView edtCmd;
     private BoundaryArrayAdapter<String> logAdapter = null;
     private SharedPreferences mPrefs = null;
     private SerialThreadListener threadListener = null;
@@ -93,8 +182,8 @@ public class TerminalFragment extends BaseFragment {
             }
         }
     };
-    private AutoCompleteTextView edtCmd = null;
     private HistoryAdapter mHistoryAdapter = null;
+    private MaterialDialog dialog;
     private UsbManager usbManager = null;
     private TreeSet<String> devSet = new TreeSet<>();
     private List<String> directList = new ArrayList<>();
@@ -136,64 +225,10 @@ public class TerminalFragment extends BaseFragment {
             }
         }
     };
-    private TextView.OnEditorActionListener actionListener = new TextView.OnEditorActionListener() {
-
-        @Override
-        public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-
-            if (v.getText().length() == 0) {
-                return false;
-            }
-            send(v.getText());
-            addLineInHistory(v.getText());
-            handleDataSent(v.getText().toString());
-            v.setText("");
-            return true;
-        }
-    };
-    private BroadcastReceiver usbReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
-                SerialFactory.getFtdiInstance(getContext(), ftdiListener);
-            }
-        }
-    };
-    private InputFilter mHexaFilter = new InputFilter() {
-
-        @Override
-        public CharSequence filter(CharSequence source, int start, int end,
-                                   Spanned dest, int dstart, int dend) {
-
-            if (source.length() == 0) {
-                return null;
-            } else {
-                StringBuilder sb = new StringBuilder();
-                for (int i = start; i < end; i++) {
-                    if (Character.isDigit(source.charAt(i))
-                        || Character.isWhitespace(source.charAt(i))
-                        || isHexaLetter(source.charAt(i))) {
-                        sb.append(source.charAt(i));
-                    } else {
-                        Log.w(TAG,
-                              "Wrong character supplied : "
-                              + source.charAt(i) + " at index "
-                              + Integer.toString(i));
-                    }
-                }
-                return sb.toString();
-            }
-        }
-
-        private boolean isHexaLetter(char c) {
-            return c >= 'a' && c <= 'f' || c >= 'A' && c <= 'F';
-        }
-    };
 
     public TerminalFragment() {
         // Required empty public constructor
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -207,23 +242,12 @@ public class TerminalFragment extends BaseFragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         mPrefs = PreferenceManager.getDefaultSharedPreferences(getContext());
 
-        spDevices = (Spinner) view.findViewById(R.id.spDev);
-        spBaudRates = (Spinner) view.findViewById(R.id.spBdt);
-        btnOpenClose = (Button) view.findViewById(R.id.btnOpenClose);
-        btnOpenClose.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openClose();
-            }
-        });
-        listView = (ListView) view.findViewById(R.id.listview1);
+        ButterKnife.bind(this, view);
 
         logAdapter = new BoundaryArrayAdapter<>(getContext(), R.layout.list_dropdown_item);
         listView.setAdapter(logAdapter);
         logAdapter.addAll(mPrefs.getStringSet(KEY_LOGS, Collections.<String>emptySet()));
 
-
-        edtCmd = (AutoCompleteTextView) view.findViewById(R.id.autoCompleteTextView);
         edtCmd.setOnEditorActionListener(actionListener);
         edtCmd.setAdapter(getHistoryAdapter());
 
@@ -233,29 +257,6 @@ public class TerminalFragment extends BaseFragment {
         setUp();
 
         super.onViewCreated(view, savedInstanceState);
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        inflater.inflate(R.menu.menu, menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-
-        int id = item.getItemId();
-
-        switch (id) {
-            case R.id.menu_clear:
-                clear();
-                return true;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -277,6 +278,10 @@ public class TerminalFragment extends BaseFragment {
         saveState();
         getContext().unregisterReceiver(usbReceiver);
         close();
+
+        if (dialog != null) {
+            dialog.dismiss();
+        }
         super.onStop();
     }
 
@@ -287,6 +292,54 @@ public class TerminalFragment extends BaseFragment {
         super.onSaveInstanceState(outState);
     }
 
+    // ********** BaseFragment ********** //
+
+    @Override
+    void onMenuClear() {
+        L.m(TAG, DEBUG);
+        logAdapter.clear();
+        logAdapter.notifyDataSetChanged();
+        saveState();
+    }
+
+    @Override
+    void onMenuOpt() {
+        if (serial != null && serial.isOpened()) {
+
+            ArrayList<Integer> indices = new ArrayList<>();
+
+            //Integer[] indices = new Integer[optKeys.length];
+            for (int i = 0; i < optKeys.length; i++) {
+                if (mapOpt.get(optKeys[i])) {
+                    indices.add(i);
+                }
+            }
+
+            dialog = new MaterialDialog.Builder(getContext())
+                .title(R.string.title_opt)
+                .items(R.array.flow_control)
+                .itemsCallbackMultiChoice(indices.toArray(new Integer[]{}), optChoices)
+                .alwaysCallMultiChoiceCallback()
+                .positiveText(android.R.string.ok)
+                .show();
+
+        } else {
+            Toast.makeText(getContext(), "Not opened", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    // ********** ButterKnife ********** //
+
+    @OnClick(R.id.btnOpenClose)
+    void openClose() {
+        if (serial != null && serial.isOpened()) {
+            close();
+        } else {
+            open();
+        }
+
+    }
+
     private void saveState() {
         L.m(TAG, DEBUG);
         mPrefs.edit()
@@ -294,22 +347,6 @@ public class TerminalFragment extends BaseFragment {
             .putInt(KEY_DEV, spDevices.getSelectedItemPosition())
             .putStringSet(KEY_LOGS, logAdapter.getItemSet())
             .apply();
-    }
-
-    private void clear() {
-        L.m(TAG, DEBUG);
-        logAdapter.clear();
-        logAdapter.notifyDataSetChanged();
-        saveState();
-    }
-
-    private void openClose() {
-        if (serial != null && serial.isOpened()) {
-            close();
-        } else {
-            open();
-        }
-
     }
 
     private void enable(boolean b) {
@@ -326,7 +363,16 @@ public class TerminalFragment extends BaseFragment {
         }
     }
 
+    private void resetOptMap() {
+        L.m(TAG, DEBUG);
+        for (CharSequence s : optKeys) {
+            mapOpt.put(s, false);
+        }
+    }
+
     private void setUp() {
+        resetOptMap();
+
         SerialFactory.getDirectInstance(getActivity(), directListener);
 
         CpcUsb.displayUsbDeviceList(getContext());

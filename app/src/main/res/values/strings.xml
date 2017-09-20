@@ -7,6 +7,7 @@
     <string name="title_transparent">Transparent</string>
     <string name="title_config">Config</string>
     <string name="title_clear">Clear</string>
+    <string name="title_opt">Options</string>
     <string name="open">Open</string>
     <string name="close">Close</string>
     <string name="send">Send</string>
@@ -75,4 +76,10 @@
     <string name="pref_line_ending_default">none</string>
     <string name="local_serial_port">Local</string>
     <string name="remote_serial_port">Remote</string>
+
+    <string-array name="flow_control">
+        <item>Rts</item>
+        <item>Xon Xoff</item>
+        <item>Hardware Flow Control</item>
+    </string-array>
 </resources>

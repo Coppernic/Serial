@@ -4,14 +4,12 @@ package fr.coppernic.sample.serial;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -114,40 +112,18 @@ public class TransparentFragment extends BaseFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_transparent, container, false);
-        ButterKnife.bind(this, view);
+        setHasOptionsMenu(true);
+        return inflater.inflate(R.layout.fragment_transparent, container, false);
+    }
 
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        ButterKnife.bind(this, view);
         mPrefs = PreferenceManager.getDefaultSharedPreferences(getContext());
 
         tvLog.setMovementMethod(new ScrollingMovementMethod());
-        //logAdapter = new BoundaryArrayAdapter<>(getContext(), R.layout.list_dropdown_item);
-        //listView.setAdapter(logAdapter);
-        //logAdapter.addAll(mPrefs.getStringSet(KEY_LOGS, Collections.<String>emptySet()));
 
-        return view;
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        inflater.inflate(R.menu.menu, menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-
-        int id = item.getItemId();
-
-        switch (id) {
-            case R.id.menu_clear:
-                clear();
-                return true;
-        }
-
-        return super.onOptionsItemSelected(item);
+        super.onViewCreated(view, savedInstanceState);
     }
 
     @Override
@@ -165,6 +141,24 @@ public class TransparentFragment extends BaseFragment {
         close();
         super.onStop();
     }
+
+    // ********** BaseFragment ********** //
+
+    @Override
+    void onMenuClear() {
+        L.m(TAG, DEBUG);
+        tvLog.setText("");
+        //logAdapter.clear();
+        //logAdapter.notifyDataSetChanged();
+        saveState();
+    }
+
+    @Override
+    void onMenuOpt() {
+        //nothing to do
+    }
+
+    // ********** ButterKnife ********** //
 
     @OnClick(R.id.buttonOpenClose)
     void openClose() {
@@ -184,14 +178,6 @@ public class TransparentFragment extends BaseFragment {
             .putInt(KEY_DEV_REMOTE, spDevicesRemote.getSelectedItemPosition())
             //.putStringSet(KEY_LOGS, logAdapter.getItemSet())
             .apply();
-    }
-
-    private void clear() {
-        L.m(TAG, DEBUG);
-        tvLog.setText("");
-        //logAdapter.clear();
-        //logAdapter.notifyDataSetChanged();
-        saveState();
     }
 
     private void updateSpinners() {

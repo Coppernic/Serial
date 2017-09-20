@@ -98,5 +98,8 @@ dependencies {
     }
     compile(group: 'fr.coppernic.sdk.cpcutils', name: 'CpcUtilsLib', version: '6.9.0', ext: 'aar')
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
+    compile('com.afollestad.material-dialogs:core:0.9.4.2') {
+        exclude group: 'com.android.support'
+    }
     testCompile 'junit:junit:4.12'
 }
