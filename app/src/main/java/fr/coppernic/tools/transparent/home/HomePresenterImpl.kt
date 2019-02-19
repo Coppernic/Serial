@@ -19,7 +19,6 @@ class HomePresenterImpl @Inject constructor(): HomePresenter {
 
     lateinit var observableIn: Observable<ByteArray>
     lateinit var observableEmitterIn:ObservableEmitter<ByteArray>
-    private var logs = ArrayList<String>()
 
     val observableOnSubcribeIn = ObservableOnSubscribe<ByteArray> {
         observableEmitterIn = it
@@ -149,9 +148,5 @@ class HomePresenterImpl @Inject constructor(): HomePresenter {
     override fun closePorts() {
         serialIn?.close()
         serialOut?.close()
-    }
-
-    override fun send() {
-        serialOut?.send(byteArrayOf(0x01, 0x02, 0x03), 3)
     }
 }

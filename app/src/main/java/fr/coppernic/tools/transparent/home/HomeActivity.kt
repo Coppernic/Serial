@@ -13,6 +13,9 @@ import fr.coppernic.tools.transparent.App
 import kotlinx.android.synthetic.main.activity_main.*
 import javax.inject.Inject
 import android.support.v7.widget.DividerItemDecoration
+import android.view.Menu
+import android.view.MenuItem
+import fr.coppernic.tools.transparent.R
 
 class HomeActivity : AppCompatActivity(), HomeView {
 
@@ -51,8 +54,6 @@ class HomeActivity : AppCompatActivity(), HomeView {
 
         viewManager = LinearLayoutManager(this)
         viewAdapter = LogAdapter(logs)
-
-
 
         rvLogs.apply {
             setHasFixedSize(true)
@@ -102,10 +103,26 @@ class HomeActivity : AppCompatActivity(), HomeView {
                 presenter.closePorts()
             }
         }
+    }
 
-        floatingActionButton.setOnClickListener {
-            presenter.send()
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_main, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        if (item != null) {
+            val id = item.itemId
+
+            when(id) {
+                R.id.action_clear_logs -> {
+                    logs.clear()
+                    viewAdapter.notifyDataSetChanged()
+                }
+            }
         }
+
+        return false
     }
 
     override fun addPort(port: HomeView.Port, name: String) {

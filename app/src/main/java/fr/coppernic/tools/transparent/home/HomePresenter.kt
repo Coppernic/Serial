@@ -9,5 +9,4 @@ interface HomePresenter {
     fun setPort(port: HomeView.Port, serialCom: SerialCom?)
     fun openPorts(nameIn:String, baudrateIn:Int, nameOut:String, baudrateOut:Int)
     fun closePorts()
-    fun send()
 }
