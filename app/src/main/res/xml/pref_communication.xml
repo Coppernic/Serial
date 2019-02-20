@@ -1,0 +1,16 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+
+    <CheckBoxPreference
+        android:defaultValue="false"
+        android:key="@string/pref_communication_ascii_key"
+        android:summary="@string/pref_communication_ascii_summary"
+        android:title="@string/pref_communication_ascii" />
+    <ListPreference
+        android:defaultValue="1"
+        android:entries="@array/pref_communication_suffix_list_values"
+        android:entryValues="@array/pref_communication_suffix_list_values"
+        android:key="@string/pref_communication_suffix_key"
+        android:summary="@string/pref_communication_suffix_summary"
+        android:title="@string/pref_communication_suffix" />
+</PreferenceScreen>

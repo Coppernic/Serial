@@ -1,7 +1,8 @@
-package fr.coppernic.tools.transparent.home
+package fr.coppernic.tools.transparent.transparent
 
 import fr.coppernic.sdk.serial.SerialCom
 import fr.coppernic.sdk.utils.core.CpcBytes
+import fr.coppernic.tools.transparent.settings.SettingsInteractor
 import io.reactivex.Observable
 import io.reactivex.ObservableEmitter
 import io.reactivex.ObservableOnSubscribe
@@ -11,16 +12,20 @@ import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.BehaviorSubject
 import javax.inject.Inject
 
-class HomePresenterImpl @Inject constructor(): HomePresenter {
-    private lateinit var view:HomeView
+class TransparentPresenterImpl @Inject constructor(): TransparentPresenter {
+    @Inject
+    lateinit var settings:SettingsInteractor
+
+    private lateinit var view: TransparentView
     private var serialIn: SerialCom? = null
     private var serialOut: SerialCom? = null
     private val subject:BehaviorSubject<Boolean> = BehaviorSubject.create()
 
     lateinit var observableIn: Observable<ByteArray>
     lateinit var observableEmitterIn:ObservableEmitter<ByteArray>
+    lateinit var disposableIn:Disposable
 
-    val observableOnSubcribeIn = ObservableOnSubscribe<ByteArray> {
+    private val observableOnSubscribeIn = ObservableOnSubscribe<ByteArray> {
         observableEmitterIn = it
 
         val availableData = serialIn?.queueStatus
@@ -28,16 +33,22 @@ class HomePresenterImpl @Inject constructor(): HomePresenter {
         if (availableData != null && availableData > 0) {
             val temp = ByteArray(availableData)
             serialIn?.receive(100, availableData, temp)
-            serialOut?.send(temp, temp.size)
-            view.addLog(">> " + CpcBytes.byteArrayToString(temp))
+            it.onNext(temp)
         }
 
-        throw Exception()
+        if (disposableIn.isDisposed) {
+            observableEmitterIn.onComplete()
+        } else {
+            // To retry
+            throw Exception()
+        }
     }
 
     lateinit var observableOut: Observable<ByteArray>
     lateinit var observableEmitterOut:ObservableEmitter<ByteArray>
-    val observableOnSubcribeOut = ObservableOnSubscribe<ByteArray> {
+    lateinit var disposableOut:Disposable
+
+    private val observableOnSubscribeOut = ObservableOnSubscribe<ByteArray> {
         observableEmitterOut = it
 
         val availableData = serialOut?.queueStatus
@@ -45,35 +56,19 @@ class HomePresenterImpl @Inject constructor(): HomePresenter {
         if (availableData != null && availableData > 0) {
             val temp = ByteArray(availableData)
             serialOut?.receive(100, availableData, temp)
-            serialIn?.send(temp, temp.size)
-            view.addLog("<< " + CpcBytes.byteArrayToString(temp))
+            it.onNext(temp)
         }
 
-        throw Exception()
+        if (disposableOut.isDisposed) {
+            observableEmitterOut.onComplete()
+        } else {
+            // To retry
+            throw Exception()
+        }
     }
 
-    override fun setUp(view: HomeView):BehaviorSubject<Boolean> {
+    override fun setUp(view: TransparentView):BehaviorSubject<Boolean> {
         this.view = view
-
-        view.addPort(HomeView.Port.IN, "/dev/ttyHSL1")
-        view.addPort(HomeView.Port.IN, "/dev/ttyUSB0")
-        view.addPort(HomeView.Port.OUT, "/dev/ttyUSB0")
-        view.addPort(HomeView.Port.OUT, "/dev/ttyHSL1")
-
-        view.addBaudrate(HomeView.Port.IN, 115200)
-        view.addBaudrate(HomeView.Port.IN, 9600)
-        view.addBaudrate(HomeView.Port.IN, 19200)
-        view.addBaudrate(HomeView.Port.IN, 38400)
-        view.addBaudrate(HomeView.Port.IN, 57600)
-        view.addBaudrate(HomeView.Port.IN, 230400)
-        view.addBaudrate(HomeView.Port.IN, 460800)
-        view.addBaudrate(HomeView.Port.OUT, 115200)
-        view.addBaudrate(HomeView.Port.OUT, 9600)
-        view.addBaudrate(HomeView.Port.OUT, 19200)
-        view.addBaudrate(HomeView.Port.OUT, 38400)
-        view.addBaudrate(HomeView.Port.OUT, 57600)
-        view.addBaudrate(HomeView.Port.OUT, 230400)
-        view.addBaudrate(HomeView.Port.OUT, 460800)
 
         return subject
     }
@@ -82,20 +77,28 @@ class HomePresenterImpl @Inject constructor(): HomePresenter {
 
     }
 
-    override fun setPort(port: HomeView.Port, serialCom: SerialCom?) {
+    override fun setPort(port: TransparentView.Port, serialCom: SerialCom?) {
         when (port) {
-            HomeView.Port.IN -> {
+            TransparentView.Port.IN -> {
                 serialIn = serialCom
-                observableIn = Observable.create(observableOnSubcribeIn)
+
+                serialIn.let {
+                    it?.setRts(settings.getPortRts())
+                    it?.setXonXoff(settings.getPortXonXoff())
+                    it?.setHardwareFlowControl(settings.getPortHardwareFlowControl())
+                }
+
+                observableIn = Observable.create(observableOnSubscribeIn)
                 observableIn.subscribeOn(Schedulers.newThread())
                         .retry()
                         .subscribe(object:Observer<ByteArray>{
                             override fun onSubscribe(d: Disposable) {
-
+                                disposableIn = d
                             }
 
                             override fun onNext(t: ByteArray) {
-
+                                serialOut?.send(t, t.size)
+                                view.addLog(">> " + CpcBytes.byteArrayToString(t))
                             }
 
                             override fun onError(e: Throwable) {
@@ -105,22 +108,29 @@ class HomePresenterImpl @Inject constructor(): HomePresenter {
                             override fun onComplete() {
 
                             }
-
                         })
-
             }
-            HomeView.Port.OUT ->{
+
+            TransparentView.Port.OUT ->{
                 serialOut = serialCom
-                observableOut = Observable.create(observableOnSubcribeOut)
+
+                serialOut.let {
+                    it?.setRts(settings.getPortRts())
+                    it?.setXonXoff(settings.getPortXonXoff())
+                    it?.setHardwareFlowControl(settings.getPortHardwareFlowControl())
+                }
+
+                observableOut = Observable.create(observableOnSubscribeOut)
                 observableOut.subscribeOn(Schedulers.newThread())
                         .retry()
                         .subscribe(object:Observer<ByteArray>{
                             override fun onSubscribe(d: Disposable) {
-
+                                disposableOut = d
                             }
 
                             override fun onNext(t: ByteArray) {
-
+                                serialIn?.send(t, t.size)
+                                view.addLog("<< " + CpcBytes.byteArrayToString(t))
                             }
 
                             override fun onError(e: Throwable) {
@@ -141,12 +151,30 @@ class HomePresenterImpl @Inject constructor(): HomePresenter {
     }
 
     override fun openPorts(nameIn:String, baudrateIn:Int, nameOut:String, baudrateOut:Int) {
-        serialIn?.open(nameIn, baudrateIn)
-        serialOut?.open(nameOut, baudrateOut)
+        serialIn.let {
+            val ret = it?.open(nameIn, baudrateIn)
+
+            if (ret != 0) {
+                view.showError(TransparentView.Error.OPEN_ERROR_PORT_IN)
+            }
+        }
+        serialOut.let{
+            val ret = it?.open(nameOut, baudrateOut)
+
+            if (ret != 0) {
+                view.showError(TransparentView.Error.OPEN_ERROR_PORT_OUT)
+            }
+        }
     }
 
     override fun closePorts() {
-        serialIn?.close()
-        serialOut?.close()
+        serialIn.let {
+            it?.close()
+            disposableIn.dispose()
+        }
+        serialOut.let {
+            it?.close()
+            disposableOut.dispose()
+        }
     }
 }

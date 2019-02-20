@@ -1,0 +1,15 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <CheckBoxPreference
+        android:defaultValue="false"
+        android:key="@string/pref_port_rts_key"
+        android:title="@string/pref_port_rts" />
+    <CheckBoxPreference
+        android:defaultValue="false"
+        android:key="@string/pref_port_xon_xoff_key"
+        android:title="@string/pref_port_xon_xoff" />
+    <CheckBoxPreference
+        android:defaultValue="false"
+        android:key="@string/pref_port_hardware_flow_control_key"
+        android:title="@string/pref_port_hardware_flow_control" />
+</PreferenceScreen>

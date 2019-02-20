@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:tools="http://schemas.android.com/tools"
-          package="fr.coppernic.tools.transparent"
-          xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="fr.coppernic.tools.transparent">
 
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
-        android:name="fr.coppernic.tools.transparent.App"
+        android:name=".App"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -14,17 +14,22 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name="fr.coppernic.tools.transparent.home.HomeActivity">
-        </activity>
+        <activity
+            android:name=".settings.SettingsActivity"
+            android:label="@string/title_activity_settings"
+            android:parentActivityName=".home.HomeActivity"/>
+        <activity android:name=".home.HomeActivity"/>
         <activity android:name="fr.coppernic.lib.splash.SplashScreen">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
+                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
             <meta-data
                 android:name="activity"
-                android:value="fr.coppernic.tools.transparent.home.HomeActivity"/>
+                android:value="fr.coppernic.tools.transparent.home.HomeActivity" />
         </activity>
     </application>
+
 </manifest>

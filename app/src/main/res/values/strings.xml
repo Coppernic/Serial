@@ -1,7 +1,65 @@
 <resources>
-    <string name="app_name">Transparent</string>
+    <string name="app_name">Serial</string>
+    <string name="port">Port</string>
     <string name="port_in">Port IN</string>
     <string name="port_out">Port OUT</string>
     <string name="open">Open</string>
     <string name="clear_logs">Clear logs</string>
+    <string name="settings">Settings</string>
+    <string name="logs">Logs</string>
+    <string name="no_logs_yet">No logs yet</string>
+    <string name="transparent">Transparent</string>
+    <string name="terminal">Terminal</string>
+    <string name="data_to_send">Data to send</string>
+    <string name="mode">Mode</string>
+
+    <string name="error_ok">OK</string>
+    <string name="error_open">Error opening serial port</string>
+    <string name="error_open_port_in">Error opening serial port IN</string>
+    <string name="error_open_port_out">Error opening serial port OUT</string>
+    <string name="error_incorrect_data_to_send">Error incorrect data to send </string>
+    <string name="error_port_not_opened">Error port not opened</string>
+
+    <string-array name="port_names">
+        <item>/dev/ttyHSL1</item>
+        <item>/dev/ttyUSB0</item>
+    </string-array>
+
+    <string-array name="baudrates">
+        <item>115200</item>
+        <item>9600</item>
+        <item>19200</item>
+        <item>38400</item>
+        <item>57600</item>
+        <item>230400</item>
+        <item>460800</item>
+    </string-array>
+    <string name="title_activity_settings">Settings</string>
+
+    <!-- Strings related to Settings -->
+
+    <string name="pref_header_port">Port</string>
+
+    <string name="pref_port_rts">RTS</string>
+    <string name="pref_port_rts_key">pref_port_rts_key</string>
+    <string name="pref_port_xon_xoff">Xon/Xoff</string>
+    <string name="pref_port_xon_xoff_key">pref_port_xon_xoff_key</string>
+    <string name="pref_port_hardware_flow_control">Hardware flow control</string>
+    <string name="pref_port_hardware_flow_control_key">pref_port_hardware_flow_control_key</string>
+
+    <string name="pref_header_communication">Communication</string>
+    <string name="pref_communication_ascii">ASCII</string>
+    <string name="pref_communication_ascii_key">pref_communication_ascii_key</string>
+    <string name="pref_communication_ascii_summary">Sends characters as ASCII characters if set, else characters are sent as hexadecimal values</string>
+    <string name="pref_communication_suffix">Suffix</string>
+    <string name="pref_communication_suffix_key">pref_communication_suffix_key</string>
+    <string name="pref_communication_suffix_summary">Suffix is only used in ASCII mode</string>
+
+    <string-array name="pref_communication_suffix_list_values">
+        <item>None</item>
+        <item>[CR][LF]</item>
+        <item>[LF]</item>
+        <item>[CR]</item>
+    </string-array>
+
 </resources>
