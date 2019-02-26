@@ -9,7 +9,7 @@ apply plugin: 'kotlin-kapt'
 apply plugin: 'fr.coppernic.extensions'
 
 copper {
-    projectName = "template"
+    projectName = "Serial"
 
     publications {
         artiConfig = project.hasProperty('artiServer') ? project.artiServer : "arti01"
