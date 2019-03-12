@@ -5,7 +5,8 @@
     android:id="@+id/constraintLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".home.HomeActivity">
+    tools:context=".home.HomeActivity"
+    android:keepScreenOn="true">
 
     <android.support.v7.widget.CardView
         android:id="@+id/cvMode"
