@@ -17,7 +17,6 @@ import java.util.concurrent.atomic.AtomicBoolean
  * Robolectric tests are done in a single thread !
  */
 @RunWith(RobolectricTestRunner::class)
-@Config(constants = BuildConfig::class, sdk = [25])
 abstract class RobolectricTest {
 
     companion object {
