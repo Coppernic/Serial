@@ -28,7 +28,7 @@ android {
     compileSdkVersion 27
 
     defaultConfig {
-        applicationId "fr.coppernic.app.template"
+        applicationId "fr.coppernic.tool.transparent"
         minSdkVersion 17
         targetSdkVersion 27
         versionCode versioning.info.versionCode

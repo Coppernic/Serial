@@ -118,4 +118,5 @@ android-support-v4.jar
 #.idea folders
 .idea
 dependencies
+.gradletasknamecache
 
