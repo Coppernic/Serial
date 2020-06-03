@@ -3,10 +3,9 @@ buildscript {
     ext.support = '27.1.1'
 
     repositories {
-        maven { url 'http://arti-01:8081/artifactory/plugins-release' }
-        maven { url 'http://arti-01:8081/artifactory/libs-release' }
         maven { url "https://plugins.gradle.org/m2/" }
         google()
+        jcenter()
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.5.1'
@@ -14,7 +13,6 @@ buildscript {
         classpath "gradle.plugin.coppernic:android-config:0.3.9"
         classpath 'com.jakewharton.hugo:hugo-plugin:1.2.1'
         classpath 'com.noveogroup.android:check:1.2.5'
-        classpath 'io.fabric.tools:gradle:1.28.1'
     }
 }
 
