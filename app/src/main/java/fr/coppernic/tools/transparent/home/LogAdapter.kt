@@ -1,14 +1,14 @@
 package fr.coppernic.tools.transparent.home
 
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import fr.coppernic.tools.transparent.R
 
-class LogAdapter(private val dataSet:ArrayList<String>):RecyclerView.Adapter<LogAdapter.LogViewHolder>() {
-    class LogViewHolder(val view: View):RecyclerView.ViewHolder(view)
+class LogAdapter(private val dataSet: ArrayList<String>) : RecyclerView.Adapter<LogAdapter.LogViewHolder>() {
+    class LogViewHolder(val view: View) : RecyclerView.ViewHolder(view)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LogViewHolder {
         val tvLog = LayoutInflater.from(parent.context)

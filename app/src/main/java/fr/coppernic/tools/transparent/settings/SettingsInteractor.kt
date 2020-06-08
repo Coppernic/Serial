@@ -4,6 +4,6 @@ interface SettingsInteractor {
     fun getPortRts():Boolean
     fun getPortXonXoff():Boolean
     fun getPortHardwareFlowControl():Boolean
-    fun getCommunicationAscii():Boolean
-    fun getCommunicationSuffix():String
+    fun getCommunicationAscii(): Boolean
+    fun getCommunicationSuffix(): String?
 }

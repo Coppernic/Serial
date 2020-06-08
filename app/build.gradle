@@ -14,6 +14,12 @@ copper {
     publications {
         artiConfig = project.hasProperty('artiServer') ? project.artiServer : "arti01"
     }
+
+    options{
+        outputNameHook = { project, variant, output ->
+            null
+        }
+    }
 }
 
 apply plugin: 'fr.coppernic.android'
@@ -25,18 +31,23 @@ repositories {
 }
 
 android {
-    compileSdkVersion 27
+    compileSdkVersion 29
 
     defaultConfig {
         applicationId "fr.coppernic.tool.serial"
         minSdkVersion 17
-        targetSdkVersion 27
+        targetSdkVersion 29
         versionCode versioning.info.versionCode
         versionName versioning.info.display
 
         vectorDrawables.useSupportLibrary = true
 
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 
     buildTypes {
@@ -50,59 +61,61 @@ android {
         exclude 'META-INF/main.kotlin_module'
         exclude 'META-INF/lib_release.kotlin_module'
     }
-}
 
-String support = '27.1.1'
+    lintOptions {
+        abortOnError false
+    }
+}
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
-    implementation "com.android.support:appcompat-v7:$support"
-    implementation "com.android.support:design:$support"
-    implementation "com.android.support:support-v4:$support"
-    implementation "com.android.support:support-vector-drawable:$support"
-    implementation "com.android.support:cardview-v7:$support"
-    implementation "com.android.support:recyclerview-v7:$support"
-    implementation 'com.android.support.constraint:constraint-layout:1.1.3'
+    implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation 'com.google.android.material:material:1.1.0'
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation 'androidx.vectordrawable:vectordrawable:1.1.0'
+    implementation 'androidx.cardview:cardview:1.0.0'
+    implementation 'androidx.recyclerview:recyclerview:1.1.0'
+    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
 
-    implementation 'android.arch.lifecycle:extensions:1.1.1'
-    implementation 'com.android.support:support-v4:27.1.1'
-    implementation 'com.android.support:support-vector-drawable:27.1.1'
-    kapt "android.arch.lifecycle:compiler:1.1.1"
+    implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation 'androidx.vectordrawable:vectordrawable:1.1.0'
+    kapt 'androidx.lifecycle:lifecycle-compiler:2.2.0'
 
     // Coppernic
-    implementation 'fr.coppernic.sdk.cpcutils:CpcUtilsLib:6.18.4'
-    implementation 'fr.coppernic.sdk.core:CpcCore:1.8.16'
+    implementation 'fr.coppernic.sdk.cpcutils:CpcUtilsLib:6.19.1'
+    implementation 'fr.coppernic.sdk.core:CpcCore:1.10.2'
 
     // Ui
-    implementation 'fr.coppernic.lib:splash:0.2.0'
+    implementation 'fr.coppernic.lib:splash:0.2.1'
 
     // Timber
     implementation 'com.jakewharton.timber:timber:4.7.1'
     implementation 'fr.bipi.treessence:treessence:0.3.0'
 
     // Butter knife
-    implementation 'com.jakewharton:butterknife:8.8.1'
-    kapt 'com.jakewharton:butterknife-compiler:8.8.1'
+    implementation 'com.jakewharton:butterknife:10.2.0'
+    kapt 'com.jakewharton:butterknife-compiler:10.2.0'
 
     // RxJava
     implementation 'io.reactivex.rxjava2:rxjava:2.2.10'
     implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'
 
     // Dagger
-    implementation 'com.google.dagger:dagger:2.16'
+    implementation 'com.google.dagger:dagger:2.25.2'
     kapt 'com.google.dagger:dagger-compiler:2.16'
 
-    testImplementation 'junit:junit:4.12'
+    testImplementation 'junit:junit:4.13'
     testImplementation 'org.hamcrest:hamcrest-all:1.3'
     testImplementation 'org.awaitility:awaitility:3.0.0'
     testImplementation 'org.mockito:mockito-core:2.23.4'
-    testImplementation 'org.robolectric:robolectric:4.3'
+    testImplementation 'org.robolectric:robolectric:4.3.1'
 
-    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'org.awaitility:awaitility:3.0.0'
-    androidTestImplementation('com.schibsted.spain:barista:2.4.0') {
+    androidTestImplementation('com.schibsted.spain:barista:3.2.0') {
         exclude group: 'com.android.support'
         exclude group: 'org.jetbrains.kotlin' // Only if you already use Kotlin in your project
     }
