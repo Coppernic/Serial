@@ -3,7 +3,7 @@ package fr.coppernic.tools.transparent.home
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import fr.coppernic.tools.transparent.App
 import kotlinx.android.synthetic.main.activity_main.*
 import android.view.Menu

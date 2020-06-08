@@ -3,11 +3,11 @@ package fr.coppernic.tools.transparent.transparent
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.support.design.widget.Snackbar
-import android.support.v4.app.Fragment
-import android.support.v7.widget.DividerItemDecoration
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
+import com.google.android.material.snackbar.Snackbar
+import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import android.view.*
 import fr.coppernic.sdk.serial.SerialCom
 import fr.coppernic.sdk.serial.SerialFactory
@@ -21,12 +21,12 @@ import javax.inject.Inject
 /**
  * A simple [Fragment] subclass.
  */
-class TransparentFragment @Inject constructor() : Fragment(), TransparentView {
+class TransparentFragment @Inject constructor() : androidx.fragment.app.Fragment(), TransparentView {
     @Inject
-    lateinit var presenter:TransparentPresenter
+    lateinit var presenter: TransparentPresenter
 
-    private lateinit var viewAdapter: RecyclerView.Adapter<*>
-    private lateinit var viewManager: RecyclerView.LayoutManager
+    private lateinit var viewAdapter: androidx.recyclerview.widget.RecyclerView.Adapter<*>
+    private lateinit var viewManager: androidx.recyclerview.widget.RecyclerView.LayoutManager
     private var logs = ArrayList<String>()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -71,17 +71,17 @@ class TransparentFragment @Inject constructor() : Fragment(), TransparentView {
         super.onViewCreated(view, savedInstanceState)
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         activity.let {
             it?.menuInflater?.inflate(R.menu.menu_main, menu)
         }
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
 
         val id = item?.itemId
 
-        when(id) {
+        when (id) {
             R.id.action_clear_logs -> {
                 logs.clear()
                 viewAdapter.notifyDataSetChanged()
@@ -101,19 +101,19 @@ class TransparentFragment @Inject constructor() : Fragment(), TransparentView {
                 it?.runOnUiThread {
                     logs.add(log)
                     tvEmptyLogs.visibility = View.INVISIBLE
-                    rvLogs.adapter.notifyDataSetChanged()
+                    rvLogs.adapter?.notifyDataSetChanged()
                 }
             }
     }
 
     private fun initializeRecyclerView() {
-        viewManager = LinearLayoutManager(activity)
+        viewManager = androidx.recyclerview.widget.LinearLayoutManager(activity)
         viewAdapter = LogAdapter(logs)
 
         rvLogs.apply {
             setHasFixedSize(true)
             layoutManager = viewManager
-            addItemDecoration(DividerItemDecoration(this@TransparentFragment.context, LinearLayoutManager.VERTICAL))
+            addItemDecoration(androidx.recyclerview.widget.DividerItemDecoration(this@TransparentFragment.context, androidx.recyclerview.widget.LinearLayoutManager.VERTICAL))
             adapter = viewAdapter
         }
     }
@@ -153,6 +153,6 @@ class TransparentFragment @Inject constructor() : Fragment(), TransparentView {
             TransparentView.Error.OK -> R.string.error_ok
         }
 
-        Snackbar.make(rvLogs, message, Snackbar.LENGTH_SHORT).show()
+        com.google.android.material.snackbar.Snackbar.make(rvLogs, message, com.google.android.material.snackbar.Snackbar.LENGTH_SHORT).show()
     }
 }

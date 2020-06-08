@@ -29,7 +29,7 @@ class SettingsInteractorAndroid @Inject constructor():SettingsInteractor {
         return sharedPreferences.getBoolean(context.getString(R.string.pref_communication_ascii_key), false)
     }
 
-    override fun getCommunicationSuffix(): String {
+    override fun getCommunicationSuffix(): String? {
         return sharedPreferences.getString(context.getString(R.string.pref_communication_suffix_key), context.resources.getStringArray(R.array.pref_communication_suffix_list_values)[0])
     }
 }

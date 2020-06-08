@@ -2,11 +2,11 @@ package fr.coppernic.tools.transparent.terminal
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.support.design.widget.Snackbar
-import android.support.v4.app.Fragment
-import android.support.v7.widget.DividerItemDecoration
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
+import com.google.android.material.snackbar.Snackbar
+import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import android.view.*
 import fr.coppernic.sdk.serial.SerialCom
 import fr.coppernic.sdk.serial.SerialFactory
@@ -21,12 +21,12 @@ import javax.inject.Inject
  * A simple [Fragment] subclass.
  *
  */
-class TerminalFragment @Inject constructor() : Fragment(), TerminalView {
+class TerminalFragment @Inject constructor() : androidx.fragment.app.Fragment(), TerminalView {
     @Inject
-    lateinit var presenter:TerminalPresenter
+    lateinit var presenter: TerminalPresenter
 
-    private lateinit var viewAdapter: RecyclerView.Adapter<*>
-    private lateinit var viewManager: RecyclerView.LayoutManager
+    private lateinit var viewAdapter: androidx.recyclerview.widget.RecyclerView.Adapter<*>
+    private lateinit var viewManager: androidx.recyclerview.widget.RecyclerView.LayoutManager
     private var logs = ArrayList<String>()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -67,17 +67,17 @@ class TerminalFragment @Inject constructor() : Fragment(), TerminalView {
         setHasOptionsMenu(true)
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         activity.let {
             it?.menuInflater?.inflate(R.menu.menu_main, menu)
         }
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
 
-        val id = item?.itemId
+        val id = item.itemId
 
-        when(id) {
+        when (id) {
             R.id.action_clear_logs -> {
                 logs.clear()
                 viewAdapter.notifyDataSetChanged()
@@ -89,13 +89,13 @@ class TerminalFragment @Inject constructor() : Fragment(), TerminalView {
     }
 
     private fun initializeRecyclerView() {
-        viewManager = LinearLayoutManager(activity)
+        viewManager = androidx.recyclerview.widget.LinearLayoutManager(activity)
         viewAdapter = LogAdapter(logs)
 
         rvLogs.apply {
             setHasFixedSize(true)
             layoutManager = viewManager
-            addItemDecoration(DividerItemDecoration(this@TerminalFragment.context, LinearLayoutManager.VERTICAL))
+            addItemDecoration(androidx.recyclerview.widget.DividerItemDecoration(this@TerminalFragment.context, androidx.recyclerview.widget.LinearLayoutManager.VERTICAL))
             adapter = viewAdapter
         }
     }
@@ -139,6 +139,6 @@ class TerminalFragment @Inject constructor() : Fragment(), TerminalView {
             }
         }
 
-        Snackbar.make(fabSend, message, Snackbar.LENGTH_SHORT).show()
+        com.google.android.material.snackbar.Snackbar.make(fabSend, message, com.google.android.material.snackbar.Snackbar.LENGTH_SHORT).show()
     }
 }
