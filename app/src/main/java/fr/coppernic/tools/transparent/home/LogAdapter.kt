@@ -7,8 +7,8 @@ import android.view.ViewGroup
 import android.widget.TextView
 import fr.coppernic.tools.transparent.R
 
-class LogAdapter(private val dataSet: ArrayList<String>) : androidx.recyclerview.widget.RecyclerView.Adapter<LogAdapter.LogViewHolder>() {
-    class LogViewHolder(val view: View) : androidx.recyclerview.widget.RecyclerView.ViewHolder(view)
+class LogAdapter(private val dataSet: ArrayList<String>) : RecyclerView.Adapter<LogAdapter.LogViewHolder>() {
+    class LogViewHolder(val view: View) : RecyclerView.ViewHolder(view)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LogViewHolder {
         val tvLog = LayoutInflater.from(parent.context)

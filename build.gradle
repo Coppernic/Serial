@@ -3,7 +3,6 @@ buildscript {
     ext.support = '27.1.1'
 
     repositories {
-        maven { url 'https://artifactory.coppernic.fr/artifactory/plugins-release' }
         maven { url 'https://artifactory.coppernic.fr/artifactory/libs-release' }
         maven { url "https://plugins.gradle.org/m2/" }
         google()

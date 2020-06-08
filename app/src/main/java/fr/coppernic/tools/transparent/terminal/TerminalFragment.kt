@@ -2,12 +2,12 @@ package fr.coppernic.tools.transparent.terminal
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import com.google.android.material.snackbar.Snackbar
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.DividerItemDecoration
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import android.view.*
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.snackbar.Snackbar
 import fr.coppernic.sdk.serial.SerialCom
 import fr.coppernic.sdk.serial.SerialFactory
 import fr.coppernic.sdk.utils.io.InstanceListener
@@ -21,12 +21,12 @@ import javax.inject.Inject
  * A simple [Fragment] subclass.
  *
  */
-class TerminalFragment @Inject constructor() : androidx.fragment.app.Fragment(), TerminalView {
+class TerminalFragment @Inject constructor() : Fragment(), TerminalView {
     @Inject
     lateinit var presenter: TerminalPresenter
 
-    private lateinit var viewAdapter: androidx.recyclerview.widget.RecyclerView.Adapter<*>
-    private lateinit var viewManager: androidx.recyclerview.widget.RecyclerView.LayoutManager
+    private lateinit var viewAdapter: RecyclerView.Adapter<*>
+    private lateinit var viewManager: RecyclerView.LayoutManager
     private var logs = ArrayList<String>()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -89,13 +89,13 @@ class TerminalFragment @Inject constructor() : androidx.fragment.app.Fragment(),
     }
 
     private fun initializeRecyclerView() {
-        viewManager = androidx.recyclerview.widget.LinearLayoutManager(activity)
+        viewManager = LinearLayoutManager(activity)
         viewAdapter = LogAdapter(logs)
 
         rvLogs.apply {
             setHasFixedSize(true)
             layoutManager = viewManager
-            addItemDecoration(androidx.recyclerview.widget.DividerItemDecoration(this@TerminalFragment.context, androidx.recyclerview.widget.LinearLayoutManager.VERTICAL))
+            addItemDecoration(DividerItemDecoration(this@TerminalFragment.context, LinearLayoutManager.VERTICAL))
             adapter = viewAdapter
         }
     }
@@ -139,6 +139,6 @@ class TerminalFragment @Inject constructor() : androidx.fragment.app.Fragment(),
             }
         }
 
-        com.google.android.material.snackbar.Snackbar.make(fabSend, message, com.google.android.material.snackbar.Snackbar.LENGTH_SHORT).show()
+        Snackbar.make(fabSend, message, Snackbar.LENGTH_SHORT).show()
     }
 }

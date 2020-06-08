@@ -26,7 +26,7 @@ class HomeActivity : AppCompatActivity() {
     @SuppressLint("CheckResult")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(fr.coppernic.tools.transparent.R.layout.activity_main)
+        setContentView(R.layout.activity_main)
 
         App.appComponents.inject(this)
 
