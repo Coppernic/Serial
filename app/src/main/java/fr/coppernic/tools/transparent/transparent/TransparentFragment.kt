@@ -25,8 +25,8 @@ class TransparentFragment @Inject constructor() : androidx.fragment.app.Fragment
     @Inject
     lateinit var presenter: TransparentPresenter
 
-    private lateinit var viewAdapter: androidx.recyclerview.widget.RecyclerView.Adapter<*>
-    private lateinit var viewManager: androidx.recyclerview.widget.RecyclerView.LayoutManager
+    private lateinit var viewAdapter: RecyclerView.Adapter<*>
+    private lateinit var viewManager: RecyclerView.LayoutManager
     private var logs = ArrayList<String>()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -79,7 +79,7 @@ class TransparentFragment @Inject constructor() : androidx.fragment.app.Fragment
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
 
-        val id = item?.itemId
+        val id = item.itemId
 
         when (id) {
             R.id.action_clear_logs -> {
@@ -107,13 +107,13 @@ class TransparentFragment @Inject constructor() : androidx.fragment.app.Fragment
     }
 
     private fun initializeRecyclerView() {
-        viewManager = androidx.recyclerview.widget.LinearLayoutManager(activity)
+        viewManager = LinearLayoutManager(activity)
         viewAdapter = LogAdapter(logs)
 
         rvLogs.apply {
             setHasFixedSize(true)
             layoutManager = viewManager
-            addItemDecoration(androidx.recyclerview.widget.DividerItemDecoration(this@TransparentFragment.context, androidx.recyclerview.widget.LinearLayoutManager.VERTICAL))
+            addItemDecoration(DividerItemDecoration(this@TransparentFragment.context, LinearLayoutManager.VERTICAL))
             adapter = viewAdapter
         }
     }
@@ -152,7 +152,6 @@ class TransparentFragment @Inject constructor() : androidx.fragment.app.Fragment
             TransparentView.Error.OPEN_ERROR_PORT_OUT -> R.string.error_open_port_out
             TransparentView.Error.OK -> R.string.error_ok
         }
-
-        com.google.android.material.snackbar.Snackbar.make(rvLogs, message, com.google.android.material.snackbar.Snackbar.LENGTH_SHORT).show()
+        Snackbar.make(rvLogs, message, Snackbar.LENGTH_SHORT).show()
     }
 }
