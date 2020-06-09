@@ -17,9 +17,14 @@
         <activity
             android:name=".settings.SettingsActivity"
             android:label="@string/title_activity_settings"
-            android:parentActivityName=".home.HomeActivity"/>
-        <activity android:name=".home.HomeActivity"/>
-        <activity android:name="fr.coppernic.lib.splash.SplashScreen">
+            android:parentActivityName=".home.HomeActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".home.HomeActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="fr.coppernic.lib.splash.SplashScreen"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -31,5 +36,4 @@
                 android:value="fr.coppernic.tools.transparent.home.HomeActivity" />
         </activity>
     </application>
-
 </manifest>
