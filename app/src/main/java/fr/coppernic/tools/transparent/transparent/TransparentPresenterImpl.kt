@@ -12,18 +12,18 @@ import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.BehaviorSubject
 import javax.inject.Inject
 
-class TransparentPresenterImpl @Inject constructor(): TransparentPresenter {
+class TransparentPresenterImpl @Inject constructor() : TransparentPresenter {
     @Inject
-    lateinit var settings:SettingsInteractor
+    lateinit var settings: SettingsInteractor
 
     private lateinit var view: TransparentView
     private var serialIn: SerialCom? = null
     private var serialOut: SerialCom? = null
-    private val subject:BehaviorSubject<Boolean> = BehaviorSubject.create()
+    private val subject: BehaviorSubject<Boolean> = BehaviorSubject.create()
 
     lateinit var observableIn: Observable<ByteArray>
-    lateinit var observableEmitterIn:ObservableEmitter<ByteArray>
-    lateinit var disposableIn:Disposable
+    lateinit var observableEmitterIn: ObservableEmitter<ByteArray>
+    lateinit var disposableIn: Disposable
 
     private val observableOnSubscribeIn = ObservableOnSubscribe<ByteArray> {
         observableEmitterIn = it
@@ -45,8 +45,8 @@ class TransparentPresenterImpl @Inject constructor(): TransparentPresenter {
     }
 
     lateinit var observableOut: Observable<ByteArray>
-    lateinit var observableEmitterOut:ObservableEmitter<ByteArray>
-    lateinit var disposableOut:Disposable
+    lateinit var observableEmitterOut: ObservableEmitter<ByteArray>
+    lateinit var disposableOut: Disposable
 
     private val observableOnSubscribeOut = ObservableOnSubscribe<ByteArray> {
         observableEmitterOut = it
@@ -67,7 +67,7 @@ class TransparentPresenterImpl @Inject constructor(): TransparentPresenter {
         }
     }
 
-    override fun setUp(view: TransparentView):BehaviorSubject<Boolean> {
+    override fun setUp(view: TransparentView): BehaviorSubject<Boolean> {
         this.view = view
 
         return subject
@@ -77,92 +77,97 @@ class TransparentPresenterImpl @Inject constructor(): TransparentPresenter {
 
     }
 
+    private fun startObserverIn() {
+        observableIn = Observable.create(observableOnSubscribeIn)
+        observableIn.subscribeOn(Schedulers.newThread())
+                .retry()
+                .subscribe(object : Observer<ByteArray> {
+                    override fun onSubscribe(d: Disposable) {
+                        disposableIn = d
+                    }
+
+                    override fun onNext(t: ByteArray) {
+                        serialOut?.send(t, t.size)
+                        view.addLog(">> " + CpcBytes.byteArrayToString(t))
+                    }
+
+                    override fun onError(e: Throwable) {
+
+                    }
+
+                    override fun onComplete() {
+
+                    }
+                })
+    }
+
+    private fun startObserverOut() {
+        observableOut = Observable.create(observableOnSubscribeOut)
+        observableOut.subscribeOn(Schedulers.newThread())
+                .retry()
+                .subscribe(object : Observer<ByteArray> {
+                    override fun onSubscribe(d: Disposable) {
+                        disposableOut = d
+                    }
+
+                    override fun onNext(t: ByteArray) {
+                        serialIn?.send(t, t.size)
+                        view.addLog("<< " + CpcBytes.byteArrayToString(t))
+                    }
+
+                    override fun onError(e: Throwable) {
+
+                    }
+
+                    override fun onComplete() {
+
+                    }
+
+                })
+
+    }
+
     override fun setPort(port: TransparentView.Port, serialCom: SerialCom?) {
         when (port) {
             TransparentView.Port.IN -> {
                 serialIn = serialCom
-
                 serialIn.let {
                     it?.setRts(settings.getPortRts())
                     it?.setXonXoff(settings.getPortXonXoff())
                     it?.setHardwareFlowControl(settings.getPortHardwareFlowControl())
                 }
-
-                observableIn = Observable.create(observableOnSubscribeIn)
-                observableIn.subscribeOn(Schedulers.newThread())
-                        .retry()
-                        .subscribe(object:Observer<ByteArray>{
-                            override fun onSubscribe(d: Disposable) {
-                                disposableIn = d
-                            }
-
-                            override fun onNext(t: ByteArray) {
-                                serialOut?.send(t, t.size)
-                                view.addLog(">> " + CpcBytes.byteArrayToString(t))
-                            }
-
-                            override fun onError(e: Throwable) {
-
-                            }
-
-                            override fun onComplete() {
-
-                            }
-                        })
             }
 
-            TransparentView.Port.OUT ->{
+            TransparentView.Port.OUT -> {
                 serialOut = serialCom
-
                 serialOut.let {
                     it?.setRts(settings.getPortRts())
                     it?.setXonXoff(settings.getPortXonXoff())
                     it?.setHardwareFlowControl(settings.getPortHardwareFlowControl())
                 }
-
-                observableOut = Observable.create(observableOnSubscribeOut)
-                observableOut.subscribeOn(Schedulers.newThread())
-                        .retry()
-                        .subscribe(object:Observer<ByteArray>{
-                            override fun onSubscribe(d: Disposable) {
-                                disposableOut = d
-                            }
-
-                            override fun onNext(t: ByteArray) {
-                                serialIn?.send(t, t.size)
-                                view.addLog("<< " + CpcBytes.byteArrayToString(t))
-                            }
-
-                            override fun onError(e: Throwable) {
-
-                            }
-
-                            override fun onComplete() {
-
-                            }
-
-                        })
-
             }
         }
-
-        val test = serialIn!= null && serialOut != null
+        val test = serialIn != null && serialOut != null
         subject.onNext(test)
     }
 
-    override fun openPorts(nameIn:String, baudrateIn:Int, nameOut:String, baudrateOut:Int) {
+    override fun openPorts(nameIn: String, baudrateIn: Int, nameOut: String, baudrateOut: Int) {
         serialIn.let {
             val ret = it?.open(nameIn, baudrateIn)
 
             if (ret != 0) {
                 view.showError(TransparentView.Error.OPEN_ERROR_PORT_IN)
+            } else {
+                startObserverIn()
             }
         }
-        serialOut.let{
+        serialOut.let {
             val ret = it?.open(nameOut, baudrateOut)
 
             if (ret != 0) {
                 view.showError(TransparentView.Error.OPEN_ERROR_PORT_OUT)
+            } else {
+                startObserverOut()
             }
         }
     }
