@@ -1,6 +1,5 @@
 package fr.coppernic.tools.transparent.transparent
 
-import android.util.Log
 import fr.coppernic.sdk.serial.SerialCom
 import fr.coppernic.sdk.utils.core.CpcBytes
 import fr.coppernic.tools.transparent.settings.SettingsInteractor
@@ -79,9 +78,6 @@ class TransparentPresenterImpl @Inject constructor() : TransparentPresenter {
     }
 
     private fun startObserverIn() {
-//        if (!disposableIn.isDisposed) {
-//            disposableIn.dispose()
-//        }
         observableIn = Observable.create(observableOnSubscribeIn)
         observableIn.subscribeOn(Schedulers.newThread())
                 .retry()
@@ -106,9 +102,6 @@ class TransparentPresenterImpl @Inject constructor() : TransparentPresenter {
     }
 
     private fun startObserverOut() {
-//        if (!disposableOut.isDisposed) {
-//            disposableOut.dispose()
-//        }
         observableOut = Observable.create(observableOnSubscribeOut)
         observableOut.subscribeOn(Schedulers.newThread())
                 .retry()
