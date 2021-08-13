@@ -16,6 +16,7 @@ import fr.coppernic.tools.transparent.R
 import fr.coppernic.tools.transparent.home.LogAdapter
 import kotlinx.android.synthetic.main.fragment_transparent.*
 import javax.inject.Inject
+import timber.log.Timber
 
 
 /**
@@ -99,7 +100,13 @@ class TransparentFragment @Inject constructor() : androidx.fragment.app.Fragment
     override fun addLog(log: String) {
             activity.let {
                 it?.runOnUiThread {
-                    logs.add(log)
+                    val logList = log.chunked(41)
+                    val reversedLogList = logList.asReversed()
+                    // val reversedLogList = logList
+                    reversedLogList.forEach {
+                        Timber.w("Adds in log $it")
+                        logs.add(0, it)
+                    }
                     tvEmptyLogs.visibility = View.INVISIBLE
                     rvLogs.adapter?.notifyDataSetChanged()
                 }

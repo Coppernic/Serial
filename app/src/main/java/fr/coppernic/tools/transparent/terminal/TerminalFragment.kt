@@ -16,6 +16,7 @@ import fr.coppernic.tools.transparent.home.LogAdapter
 import kotlinx.android.synthetic.main.fragment_terminal.*
 
 import javax.inject.Inject
+import timber.log.Timber
 
 /**
  * A simple [Fragment] subclass.
@@ -122,7 +123,20 @@ class TerminalFragment @Inject constructor() : Fragment(), TerminalView {
     override fun addLog(log: String) {
         activity.let{
             it?.runOnUiThread {
-                logs.add(0, log)
+                val logList = log.chunked(41)
+//                logList.forEach {
+//                    Timber.w("Adds in log $it")
+//                    logs.add(it)
+//                }
+
+                val reversedLogList = logList.asReversed()
+                // val reversedLogList = logList
+                reversedLogList.forEach {
+                    Timber.w("Adds in log $it")
+                    logs.add(0, it)
+                }
+
+                
                 viewAdapter.notifyDataSetChanged()
                 tvEmptyLogs.visibility = View.INVISIBLE
             }
