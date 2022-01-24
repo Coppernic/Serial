@@ -6,28 +6,14 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
-apply plugin: 'fr.coppernic.extensions'
 
-copper {
-    projectName = "Serial"
-
-    publications {
-        artiConfig = project.hasProperty('artiServer') ? project.artiServer : "arti01"
-    }
-
-    options{
-        outputNameHook = { project, variant, output ->
-            null
-        }
-    }
-}
-
-apply plugin: 'fr.coppernic.android'
+apply from: rootProject.file('gradle/publish-app.gradle')
 
 repositories {
-    maven { url 'https://artifactory.coppernic.fr/artifactory/libs-release' }
+    maven { url "https://nexus.coppernic.fr/repository/libs-release" }
     google()
-    jcenter()
+    mavenCentral()
+    maven { url 'https://jitpack.io' }
 }
 
 android {
@@ -89,11 +75,11 @@ dependencies {
     implementation 'fr.coppernic.sdk.core:CpcCore:1.10.2'
 
     // Ui
-    implementation 'fr.coppernic.lib:splash:0.2.1'
+    implementation 'com.github.Coppernic.AndroidSplashScreen:splash:0.4.1'
 
     // Timber
     implementation 'com.jakewharton.timber:timber:4.7.1'
-    implementation 'fr.bipi.treessence:treessence:0.3.0'
+    implementation 'com.github.bastienpaulfr:Treessence:1.0.5'
 
     // Butter knife
     implementation 'com.jakewharton:butterknife:10.2.0'
