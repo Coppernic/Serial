@@ -22,13 +22,25 @@ def artifactIdHook = { variant ->
 project.android.applicationVariants.all { variant ->
     if (variant.buildType.name != "debug") {
         project.publishing.publications.create("${variant.name}", MavenPublication) {
-            // Applies the component for the release build variant.
-            from components.getByName("${variant.name}_apk")
-
             // You can then customize attributes of the publication as shown below.
             groupId variant.applicationId
             artifactId "${artifactIdHook(variant)}"
             version versioning.info.display
+
+            String flavors = ''
+            // Handle flavors
+            if (variant.productFlavors.size() > 0) {
+                flavors = "${variant.productFlavors.collect { it.name }.join('-')}"
+                project.logger.info "Flavors : $flavors"
+            }
+
+            // Set artifact
+            variant.outputs.all { output ->
+                project.logger.info "Artifact : ${output.outputFile}"
+                artifact(output.outputFile) {
+                    classifier = flavors
+                }
+            }
         }
     }
 }
