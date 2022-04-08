@@ -62,4 +62,10 @@
         <item>[CR]</item>
     </string-array>
 
+    <string name="pref_header_log">Logs</string>
+
+    <string name="pref_logs_enable_key">logs</string>
+    <string name="pref_communication_logs_enable_summary">Allows the logs to be displayed on screen</string>
+    <string name="pref_log">Enable Logs</string>
+
 </resources>

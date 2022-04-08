@@ -13,6 +13,7 @@ import fr.coppernic.sdk.serial.SerialFactory
 import fr.coppernic.sdk.utils.io.InstanceListener
 import fr.coppernic.tools.transparent.R
 import fr.coppernic.tools.transparent.home.LogAdapter
+import fr.coppernic.tools.transparent.settings.SettingsInteractor
 import kotlinx.android.synthetic.main.fragment_terminal.*
 
 import javax.inject.Inject
@@ -28,6 +29,9 @@ class TerminalFragment @Inject constructor() : Fragment(), TerminalView {
     private lateinit var viewAdapter: RecyclerView.Adapter<*>
     private lateinit var viewManager: RecyclerView.LayoutManager
     private var logs = ArrayList<String>()
+
+    @Inject
+    lateinit var settings: SettingsInteractor
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -120,6 +124,10 @@ class TerminalFragment @Inject constructor() : Fragment(), TerminalView {
     }
 
     override fun addLog(log: String) {
+        if (!settings.getLogEnable()) {
+            return
+        }
+
         activity.let{
             it?.runOnUiThread {
                 logs.add(0, log)

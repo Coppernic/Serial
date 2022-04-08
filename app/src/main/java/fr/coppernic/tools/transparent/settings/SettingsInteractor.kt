@@ -6,4 +6,6 @@ interface SettingsInteractor {
     fun getPortHardwareFlowControl():Boolean
     fun getCommunicationAscii(): Boolean
     fun getCommunicationSuffix(): String?
+    fun getLogEnable(): Boolean
+
 }

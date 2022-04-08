@@ -12,4 +12,10 @@
         android:icon="@drawable/ic_swap_horiz_24dp"
         android:title="@string/pref_header_communication" />
 
+    <header
+        android:fragment="fr.coppernic.tools.transparent.settings.SettingsActivity$LogPreferenceFragment"
+        android:icon="@drawable/ic_swap_horiz_24dp"
+        android:title="@string/pref_header_log" />
+
+
 </preference-headers>
