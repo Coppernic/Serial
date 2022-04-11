@@ -124,15 +124,13 @@ class TerminalFragment @Inject constructor() : Fragment(), TerminalView {
     }
 
     override fun addLog(log: String) {
-        if (!settings.getLogEnable()) {
-            return
-        }
-
-        activity.let{
-            it?.runOnUiThread {
-                logs.add(0, log)
-                viewAdapter.notifyDataSetChanged()
-                tvEmptyLogs.visibility = View.INVISIBLE
+        if (settings.getLogEnable()) {
+            activity.let {
+                it?.runOnUiThread {
+                    logs.add(0, log)
+                    viewAdapter.notifyDataSetChanged()
+                    tvEmptyLogs.visibility = View.INVISIBLE
+                }
             }
         }
     }

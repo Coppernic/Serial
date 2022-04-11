@@ -101,9 +101,7 @@ class TransparentFragment @Inject constructor() : androidx.fragment.app.Fragment
     }
 
     override fun addLog(log: String) {
-        if (!settings.getLogEnable()) {
-            return
-        }
+        if (settings.getLogEnable()) {
             activity.let {
                 it?.runOnUiThread {
                     logs.add(log)
@@ -111,6 +109,7 @@ class TransparentFragment @Inject constructor() : androidx.fragment.app.Fragment
                     rvLogs.adapter?.notifyDataSetChanged()
                 }
             }
+        }
     }
 
     private fun initializeRecyclerView() {
