@@ -23,6 +23,7 @@
     <string-array name="port_names">
         <item>/dev/ttyHSL1</item>
         <item>/dev/ttyUSB0</item>
+        <item>/dev/ttyMSM1</item>
     </string-array>
 
     <string-array name="baudrates">
@@ -61,5 +62,11 @@
         <item>[LF]</item>
         <item>[CR]</item>
     </string-array>
+
+    <string name="pref_header_log">Logs</string>
+
+    <string name="pref_logs_enable_key">logs</string>
+    <string name="pref_communication_logs_enable_summary">Allows the logs to be displayed on screen</string>
+    <string name="pref_log">Enable Logs</string>
 
 </resources>

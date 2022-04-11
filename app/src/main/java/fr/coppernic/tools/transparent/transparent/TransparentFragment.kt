@@ -14,6 +14,7 @@ import fr.coppernic.sdk.serial.SerialFactory
 import fr.coppernic.sdk.utils.io.InstanceListener
 import fr.coppernic.tools.transparent.R
 import fr.coppernic.tools.transparent.home.LogAdapter
+import fr.coppernic.tools.transparent.settings.SettingsInteractor
 import kotlinx.android.synthetic.main.fragment_transparent.*
 import javax.inject.Inject
 
@@ -28,6 +29,9 @@ class TransparentFragment @Inject constructor() : androidx.fragment.app.Fragment
     private lateinit var viewAdapter: RecyclerView.Adapter<*>
     private lateinit var viewManager: RecyclerView.LayoutManager
     private var logs = ArrayList<String>()
+
+    @Inject
+    lateinit var settings: SettingsInteractor
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -97,6 +101,7 @@ class TransparentFragment @Inject constructor() : androidx.fragment.app.Fragment
     }
 
     override fun addLog(log: String) {
+        if (settings.getLogEnable()) {
             activity.let {
                 it?.runOnUiThread {
                     logs.add(log)
@@ -104,6 +109,7 @@ class TransparentFragment @Inject constructor() : androidx.fragment.app.Fragment
                     rvLogs.adapter?.notifyDataSetChanged()
                 }
             }
+        }
     }
 
     private fun initializeRecyclerView() {

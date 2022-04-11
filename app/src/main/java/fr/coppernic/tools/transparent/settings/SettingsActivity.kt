@@ -71,6 +71,7 @@ class SettingsActivity : AppCompatPreferenceActivity() {
         return PreferenceFragment::class.java.name == fragmentName
                 || PortPreferenceFragment::class.java.name == fragmentName
                 || CommunicationPreferenceFragment::class.java.name == fragmentName
+                || LogPreferenceFragment::class.java.name == fragmentName
     }
 
     /**
@@ -116,6 +117,25 @@ class SettingsActivity : AppCompatPreferenceActivity() {
             return super.onOptionsItemSelected(item)
         }
     }
+
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+    class LogPreferenceFragment : PreferenceFragment() {
+        override fun onCreate(savedInstanceState: Bundle?) {
+            super.onCreate(savedInstanceState)
+            addPreferencesFromResource(R.xml.pref_log)
+            setHasOptionsMenu(true)
+        }
+
+        override fun onOptionsItemSelected(item: MenuItem): Boolean {
+            val id = item.itemId
+            if (id == android.R.id.home) {
+                startActivity(Intent(activity, SettingsActivity::class.java))
+                return true
+            }
+            return super.onOptionsItemSelected(item)
+        }
+    }
+
 
     companion object {
 
