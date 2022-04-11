@@ -23,6 +23,7 @@
     <string-array name="port_names">
         <item>/dev/ttyHSL1</item>
         <item>/dev/ttyUSB0</item>
+        <item>/dev/ttyMSM1</item>
     </string-array>
 
     <string-array name="baudrates">

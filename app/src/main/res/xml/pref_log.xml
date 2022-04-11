@@ -1,0 +1,9 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+
+    <CheckBoxPreference
+        android:defaultValue="true"
+        android:key="@string/pref_logs_enable_key"
+        android:summary="@string/pref_communication_logs_enable_summary"
+        android:title="@string/pref_log" />
+</PreferenceScreen>
