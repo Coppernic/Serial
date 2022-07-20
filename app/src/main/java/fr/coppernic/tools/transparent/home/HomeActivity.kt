@@ -3,16 +3,14 @@ package fr.coppernic.tools.transparent.home
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
+import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import fr.coppernic.tools.transparent.App
-import kotlinx.android.synthetic.main.activity_main.*
-import android.view.Menu
-import android.view.MenuItem
 import fr.coppernic.tools.transparent.R
 import fr.coppernic.tools.transparent.settings.SettingsActivity
 import fr.coppernic.tools.transparent.terminal.TerminalFragment
 import fr.coppernic.tools.transparent.transparent.TransparentFragment
-import timber.log.Timber
+import kotlinx.android.synthetic.main.activity_main.*
 import javax.inject.Inject
 
 class HomeActivity : AppCompatActivity() {
@@ -52,21 +50,18 @@ class HomeActivity : AppCompatActivity() {
         fragmentTransaction.commit()
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        if (item != null) {
-            val id = item.itemId
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
 
-            when(id) {
-                R.id.action_clear_logs -> {
+        when(item.itemId) {
+            R.id.action_clear_logs -> {
 //                    logs.clear()
 //                    viewAdapter.notifyDataSetChanged()
 //                    tvEmptyLogs.visibility = View.VISIBLE
-                }
+            }
 
-                R.id.action_settings -> {
-                    val intent = Intent(this, SettingsActivity::class.java)
-                    startActivity(intent)
-                }
+            R.id.action_settings -> {
+                val intent = Intent(this, SettingsActivity::class.java)
+                startActivity(intent)
             }
         }
 
