@@ -26,7 +26,7 @@
         <item>/dev/ttyMSM1</item>
         <item>/dev/ttyACM0</item>
         <item>/dev/ttyMSM0</item>
-        <item>/dev/ttyGS</item>
+        <item>/dev/ttyHS0</item>
         <item>/dev/ttyUSB3</item>
     </string-array>
 
