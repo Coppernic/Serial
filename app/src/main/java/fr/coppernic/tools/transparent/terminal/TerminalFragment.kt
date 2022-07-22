@@ -72,23 +72,17 @@ class TerminalFragment @Inject constructor() : Fragment(), TerminalView {
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        activity.let {
-            it?.menuInflater?.inflate(R.menu.menu_main, menu)
-        }
+        activity?.menuInflater?.inflate(R.menu.menu_main, menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-
-        val id = item.itemId
-
-        when (id) {
+        when (item.itemId) {
             R.id.action_clear_logs -> {
                 logs.clear()
                 viewAdapter.notifyDataSetChanged()
                 tvEmptyLogs.visibility = View.VISIBLE
             }
         }
-
         return true
     }
 

@@ -1,6 +1,7 @@
 package fr.coppernic.tools.transparent.terminal
 
 import fr.coppernic.sdk.serial.SerialCom
+import fr.coppernic.sdk.serial.SerialCom.*
 import fr.coppernic.sdk.utils.core.CpcBytes
 import fr.coppernic.tools.transparent.settings.SettingsInteractor
 import io.reactivex.Observable
@@ -23,7 +24,7 @@ class TerminalPresenterImpl @Inject constructor():TerminalPresenter {
 
     lateinit var observable: Observable<ByteArray>
     lateinit var observableEmitter: ObservableEmitter<ByteArray>
-    lateinit var disposable:Disposable
+    var disposable:Disposable? = null
 
     private val observableOnSubcribe = ObservableOnSubscribe<ByteArray> {
         observableEmitter = it
@@ -35,7 +36,7 @@ class TerminalPresenterImpl @Inject constructor():TerminalPresenter {
             serial?.receive(100, availableData, temp)
             observableEmitter.onNext(temp)
         }
-        if (disposable.isDisposed) {
+        if (disposable?.isDisposed == true) {
             observableEmitter.onComplete()
         } else {
             throw Exception()
@@ -65,12 +66,21 @@ class TerminalPresenterImpl @Inject constructor():TerminalPresenter {
     }
 
     override fun openPort(name: String, baudrate: Int) {
-        var ret:Int
-        serial.let{
-            ret = it?.open(name, baudrate)!!
+        var ret: Int = -1
+        serial?.let{
+            ret = it.open(name, baudrate)
         }
 
         if (ret != 0) {
+            when (ret) {
+                ERROR_FAIL -> view.addLog("ERROR_FAIL")
+                ERROR_OPEN -> view.addLog("ERROR_OPEN")
+                ERROR_TIMEOUT -> view.addLog("ERROR_TIMEOUT")
+                ERROR_OPEN_SECURITY_EXCEPTION -> view.addLog("ERROR_OPEN_SECURITY_EXCEPTION")
+                ERROR_OPEN_IO_EXCEPTION -> view.addLog("ERROR_OPEN_IO_EXCEPTION")
+                ERROR_NOT_BOUND -> view.addLog("ERROR_NOT_BOUND")
+                ERROR_ALREADY_OPENED -> view.addLog("ERROR_ALREADY_OPENED")
+            }
             view.showError(TerminalView.Error.OPEN_ERROR)
         } else {
             observable = Observable.create(observableOnSubcribe)
@@ -99,21 +109,17 @@ class TerminalPresenterImpl @Inject constructor():TerminalPresenter {
     override fun closePort() {
         serial.let{
             it?.close()
-            disposable.dispose()
+            disposable?.dispose()
         }
     }
 
     override fun send(data: String) {
-
-        serial.let {
-            lateinit var dataBytes:ByteArray
-
-            if (!it?.isOpened!!) {
+        serial?.let { port ->
+            val dataBytes:ByteArray?
+            if (!port.isOpened) {
                 view.showError(TerminalView.Error.PORT_NOT_OPENED)
                 return
             }
-
-
             try {
                 dataBytes = when(settings.getCommunicationAscii()) {
                     true -> {
@@ -135,8 +141,7 @@ class TerminalPresenterImpl @Inject constructor():TerminalPresenter {
                 return
             }
 
-            it?.send(dataBytes, dataBytes.size)
-
+            dataBytes?.let { port.send(it, it.size) }
             view.addLog(">> $data")
         }
     }
