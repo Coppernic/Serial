@@ -12,9 +12,9 @@ import fr.coppernic.sdk.serial.SerialCom
 import fr.coppernic.sdk.serial.SerialFactory
 import fr.coppernic.sdk.utils.io.InstanceListener
 import fr.coppernic.tools.transparent.R
+import fr.coppernic.tools.transparent.databinding.FragmentTerminalBinding
 import fr.coppernic.tools.transparent.home.LogAdapter
 import fr.coppernic.tools.transparent.settings.SettingsInteractor
-import kotlinx.android.synthetic.main.fragment_terminal.*
 
 import javax.inject.Inject
 
@@ -33,10 +33,14 @@ class TerminalFragment @Inject constructor() : Fragment(), TerminalView {
     @Inject
     lateinit var settings: SettingsInteractor
 
+    private lateinit var binding: FragmentTerminalBinding
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_terminal, container, false)
+        binding = FragmentTerminalBinding.inflate(inflater, container, false)
+        val view = binding.root
+        return view
     }
 
     @SuppressLint("CheckResult")
@@ -54,15 +58,15 @@ class TerminalFragment @Inject constructor() : Fragment(), TerminalView {
             }
         }
 
-        swOpen.setOnCheckedChangeListener { _, checked ->
+        binding.swOpen.setOnCheckedChangeListener { _, checked ->
             when(checked) {
                 false -> presenter.closePort()
-                true -> presenter.openPort(spPortName.selectedItem.toString(), spPortBaudrate.selectedItem.toString().toInt())
+                true -> presenter.openPort(binding.spPortName.selectedItem.toString(), binding.spPortBaudrate.selectedItem.toString().toInt())
             }
         }
 
-        fabSend.setOnClickListener {
-            presenter.send(etDataToSend.text.toString())
+        binding.fabSend.setOnClickListener {
+            presenter.send(binding.etDataToSend.text.toString())
         }
     }
 
@@ -80,7 +84,7 @@ class TerminalFragment @Inject constructor() : Fragment(), TerminalView {
             R.id.action_clear_logs -> {
                 logs.clear()
                 viewAdapter.notifyDataSetChanged()
-                tvEmptyLogs.visibility = View.VISIBLE
+                binding.tvEmptyLogs.visibility = View.VISIBLE
             }
         }
         return true
@@ -90,7 +94,7 @@ class TerminalFragment @Inject constructor() : Fragment(), TerminalView {
         viewManager = LinearLayoutManager(activity)
         viewAdapter = LogAdapter(logs)
 
-        rvLogs.apply {
+        binding.rvLogs.apply {
             setHasFixedSize(true)
             layoutManager = viewManager
             addItemDecoration(DividerItemDecoration(this@TerminalFragment.context, LinearLayoutManager.VERTICAL))
@@ -114,7 +118,7 @@ class TerminalFragment @Inject constructor() : Fragment(), TerminalView {
     }
 
     private fun enableSwOpen(enable:Boolean) {
-        swOpen.isEnabled = enable
+        binding.swOpen.isEnabled = enable
     }
 
     override fun addLog(log: String) {
@@ -123,7 +127,7 @@ class TerminalFragment @Inject constructor() : Fragment(), TerminalView {
                 it?.runOnUiThread {
                     logs.add(0, log)
                     viewAdapter.notifyDataSetChanged()
-                    tvEmptyLogs.visibility = View.INVISIBLE
+                    binding.tvEmptyLogs.visibility = View.INVISIBLE
                 }
             }
         }
@@ -139,6 +143,6 @@ class TerminalFragment @Inject constructor() : Fragment(), TerminalView {
             }
         }
 
-        Snackbar.make(fabSend, message, Snackbar.LENGTH_SHORT).show()
+        Snackbar.make(binding.fabSend, message, Snackbar.LENGTH_SHORT).show()
     }
 }

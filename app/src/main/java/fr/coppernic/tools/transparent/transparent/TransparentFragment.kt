@@ -13,9 +13,9 @@ import fr.coppernic.sdk.serial.SerialCom
 import fr.coppernic.sdk.serial.SerialFactory
 import fr.coppernic.sdk.utils.io.InstanceListener
 import fr.coppernic.tools.transparent.R
+import fr.coppernic.tools.transparent.databinding.FragmentTransparentBinding
 import fr.coppernic.tools.transparent.home.LogAdapter
 import fr.coppernic.tools.transparent.settings.SettingsInteractor
-import kotlinx.android.synthetic.main.fragment_transparent.*
 import javax.inject.Inject
 
 
@@ -33,9 +33,13 @@ class TransparentFragment @Inject constructor() : androidx.fragment.app.Fragment
     @Inject
     lateinit var settings: SettingsInteractor
 
+    lateinit var binding: FragmentTransparentBinding
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_transparent, container, false)
+        binding = FragmentTransparentBinding.inflate(inflater, container, false)
+        val view = binding.root
+        return view
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,7 +52,7 @@ class TransparentFragment @Inject constructor() : androidx.fragment.app.Fragment
 
         initializeRecyclerView()
 
-        spPortOutName.setSelection(1)
+        binding.spPortOutName.setSelection(1)
 
         enableSwOpen(false)
 
@@ -61,12 +65,12 @@ class TransparentFragment @Inject constructor() : androidx.fragment.app.Fragment
 
         initializeSerialPorts()
 
-        swOpen.setOnClickListener {
-            if (swOpen.isChecked) {
-                presenter.openPorts(spPortName.selectedItem.toString(),
-                        spPortInBaudrate.selectedItem.toString().toInt(),
-                        spPortOutName.selectedItem.toString(),
-                        spPortOutBaudrate.selectedItem.toString().toInt())
+        binding.swOpen.setOnClickListener {
+            if (binding.swOpen.isChecked) {
+                presenter.openPorts(binding.spPortName.selectedItem.toString(),
+                        binding.spPortInBaudrate.selectedItem.toString().toInt(),
+                        binding.spPortOutName.selectedItem.toString(),
+                        binding.spPortOutBaudrate.selectedItem.toString().toInt())
             } else {
                 presenter.closePorts()
             }
@@ -89,7 +93,7 @@ class TransparentFragment @Inject constructor() : androidx.fragment.app.Fragment
             R.id.action_clear_logs -> {
                 logs.clear()
                 viewAdapter.notifyDataSetChanged()
-                tvEmptyLogs.visibility = View.VISIBLE
+                binding.tvEmptyLogs.visibility = View.VISIBLE
             }
         }
 
@@ -97,7 +101,7 @@ class TransparentFragment @Inject constructor() : androidx.fragment.app.Fragment
     }
 
     private fun enableSwOpen(enable:Boolean) {
-        swOpen.isEnabled = enable
+        binding.swOpen.isEnabled = enable
     }
 
     override fun addLog(log: String) {
@@ -105,8 +109,8 @@ class TransparentFragment @Inject constructor() : androidx.fragment.app.Fragment
             activity.let {
                 it?.runOnUiThread {
                     logs.add(log)
-                    tvEmptyLogs.visibility = View.INVISIBLE
-                    rvLogs.adapter?.notifyDataSetChanged()
+                    binding.tvEmptyLogs.visibility = View.INVISIBLE
+                    binding.rvLogs.adapter?.notifyDataSetChanged()
                 }
             }
         }
@@ -116,7 +120,7 @@ class TransparentFragment @Inject constructor() : androidx.fragment.app.Fragment
         viewManager = LinearLayoutManager(activity)
         viewAdapter = LogAdapter(logs)
 
-        rvLogs.apply {
+        binding.rvLogs.apply {
             setHasFixedSize(true)
             layoutManager = viewManager
             addItemDecoration(DividerItemDecoration(this@TransparentFragment.context, LinearLayoutManager.VERTICAL))
@@ -158,6 +162,6 @@ class TransparentFragment @Inject constructor() : androidx.fragment.app.Fragment
             TransparentView.Error.OPEN_ERROR_PORT_OUT -> R.string.error_open_port_out
             TransparentView.Error.OK -> R.string.error_ok
         }
-        Snackbar.make(rvLogs, message, Snackbar.LENGTH_SHORT).show()
+        Snackbar.make(binding.rvLogs, message, Snackbar.LENGTH_SHORT).show()
     }
 }

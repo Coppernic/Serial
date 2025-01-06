@@ -7,10 +7,10 @@ import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import fr.coppernic.tools.transparent.App
 import fr.coppernic.tools.transparent.R
+import fr.coppernic.tools.transparent.databinding.ActivityMainBinding
 import fr.coppernic.tools.transparent.settings.SettingsActivity
 import fr.coppernic.tools.transparent.terminal.TerminalFragment
 import fr.coppernic.tools.transparent.transparent.TransparentFragment
-import kotlinx.android.synthetic.main.activity_main.*
 import javax.inject.Inject
 
 class HomeActivity : AppCompatActivity() {
@@ -21,14 +21,19 @@ class HomeActivity : AppCompatActivity() {
     @Inject
     lateinit var terminalFragment: TerminalFragment
 
+    private lateinit var binding: ActivityMainBinding
+
     @SuppressLint("CheckResult")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
 
         App.appComponents.inject(this)
 
-        swMode.setOnCheckedChangeListener { it, checked ->
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        val view = binding.root
+        setContentView(view)
+
+        binding.swMode.setOnCheckedChangeListener { it, checked ->
             when(checked) {
                 false ->  {
                     it.text = getString(R.string.transparent)
