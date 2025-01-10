@@ -11,15 +11,11 @@ import fr.coppernic.tools.transparent.databinding.ActivityMainBinding
 import fr.coppernic.tools.transparent.settings.SettingsActivity
 import fr.coppernic.tools.transparent.terminal.TerminalFragment
 import fr.coppernic.tools.transparent.transparent.TransparentFragment
-import javax.inject.Inject
 
 class HomeActivity : AppCompatActivity() {
 
-    @Inject
-    lateinit var transparentFragment:TransparentFragment
-
-    @Inject
-    lateinit var terminalFragment: TerminalFragment
+    val transparentFragment:TransparentFragment = TransparentFragment()
+    val terminalFragment: TerminalFragment = TerminalFragment()
 
     private lateinit var binding: ActivityMainBinding
 
@@ -59,9 +55,6 @@ class HomeActivity : AppCompatActivity() {
 
         when(item.itemId) {
             R.id.action_clear_logs -> {
-//                    logs.clear()
-//                    viewAdapter.notifyDataSetChanged()
-//                    tvEmptyLogs.visibility = View.VISIBLE
             }
 
             R.id.action_settings -> {

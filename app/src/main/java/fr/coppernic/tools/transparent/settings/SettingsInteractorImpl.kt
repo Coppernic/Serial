@@ -1,0 +1,36 @@
+package fr.coppernic.tools.transparent.settings
+
+import android.content.Context
+import android.content.SharedPreferences
+import fr.coppernic.tools.transparent.R
+import javax.inject.Inject
+
+class SettingsInteractorImpl(
+    val context: Context,
+    val sharedPreferences:SharedPreferences,
+):SettingsInteractor {
+
+    override fun getPortRts(): Boolean {
+        return sharedPreferences.getBoolean(context.getString(R.string.pref_port_rts_key), false)
+    }
+
+    override fun getPortXonXoff(): Boolean {
+        return sharedPreferences.getBoolean(context.getString(R.string.pref_port_xon_xoff_key), false)
+    }
+
+    override fun getPortHardwareFlowControl(): Boolean {
+        return sharedPreferences.getBoolean(context.getString(R.string.pref_port_hardware_flow_control_key), false)
+    }
+
+    override fun getCommunicationAscii(): Boolean {
+        return sharedPreferences.getBoolean(context.getString(R.string.pref_communication_ascii_key), false)
+    }
+
+    override fun getLogEnable(): Boolean {
+        return sharedPreferences.getBoolean(context.getString(R.string.pref_logs_enable_key), true)
+    }
+
+    override fun getCommunicationSuffix(): String? {
+        return sharedPreferences.getString(context.getString(R.string.pref_communication_suffix_key), context.resources.getStringArray(R.array.pref_communication_suffix_list_values)[0])
+    }
+}

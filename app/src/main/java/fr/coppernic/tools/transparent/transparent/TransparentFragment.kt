@@ -1,39 +1,38 @@
 package fr.coppernic.tools.transparent.transparent
 
-
 import android.annotation.SuppressLint
+import android.content.Context
 import android.os.Bundle
-import com.google.android.material.snackbar.Snackbar
+import android.view.*
+import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import android.view.*
-import fr.coppernic.sdk.serial.SerialCom
-import fr.coppernic.sdk.serial.SerialFactory
-import fr.coppernic.sdk.utils.io.InstanceListener
+import com.google.android.material.snackbar.Snackbar
+import fr.coppernic.sdk.utils.core.CpcBytes
 import fr.coppernic.tools.transparent.R
 import fr.coppernic.tools.transparent.databinding.FragmentTransparentBinding
 import fr.coppernic.tools.transparent.home.LogAdapter
 import fr.coppernic.tools.transparent.settings.SettingsInteractor
-import javax.inject.Inject
-
+import kotlinx.coroutines.launch
+import org.koin.android.ext.android.inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 /**
  * A simple [Fragment] subclass.
  */
-class TransparentFragment @Inject constructor() : androidx.fragment.app.Fragment(), TransparentView {
-    @Inject
-    lateinit var presenter: TransparentPresenter
-
+class TransparentFragment : androidx.fragment.app.Fragment(), TransparentView {
     private lateinit var viewAdapter: RecyclerView.Adapter<*>
     private lateinit var viewManager: RecyclerView.LayoutManager
     private var logs = ArrayList<String>()
 
-    @Inject
-    lateinit var settings: SettingsInteractor
+    private val serialPortViewModel: SerialPortViewModel by viewModel()
 
-    lateinit var binding: FragmentTransparentBinding
+    private val settings: SettingsInteractor by inject()
+
+    private lateinit var binding: FragmentTransparentBinding
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -56,23 +55,43 @@ class TransparentFragment @Inject constructor() : androidx.fragment.app.Fragment
 
         enableSwOpen(false)
 
-        presenter.setUp(this).subscribe {
-            if(it) {
+//        presenter.setUp(this).subscribe {
+//            if(it) {
                 // Switch open is accessible
                 enableSwOpen(true)
-            }
-        }
+//            }
+//        }
 
-        initializeSerialPorts()
+//        initializeSerialPorts()
+
+        updateSpinner(this.context)
 
         binding.swOpen.setOnClickListener {
             if (binding.swOpen.isChecked) {
-                presenter.openPorts(binding.spPortName.selectedItem.toString(),
+                    serialPortViewModel.launchTransparentPortsMode(binding.spPortName.selectedItem.toString(),
                         binding.spPortInBaudrate.selectedItem.toString().toInt(),
                         binding.spPortOutName.selectedItem.toString(),
                         binding.spPortOutBaudrate.selectedItem.toString().toInt())
+
+//                presenter.openPorts(binding.spPortName.selectedItem.toString(),
+//                        binding.spPortInBaudrate.selectedItem.toString().toInt(),
+//                        binding.spPortOutName.selectedItem.toString(),
+//                        binding.spPortOutBaudrate.selectedItem.toString().toInt())
             } else {
-                presenter.closePorts()
+                    serialPortViewModel.closePorts()
+//                presenter.closePorts()
+            }
+        }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            serialPortViewModel.portInData.collect { portData ->
+                addLog(">> " + CpcBytes.byteArrayToString(portData))
+            }
+        }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            serialPortViewModel.portOutData.collect { portData ->
+                addLog("<< " + CpcBytes.byteArrayToString(portData))
             }
         }
 
@@ -81,7 +100,7 @@ class TransparentFragment @Inject constructor() : androidx.fragment.app.Fragment
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         activity.let {
-            it?.menuInflater?.inflate(R.menu.menu_main, menu)
+            it?.menuInflater?.inflate(fr.coppernic.tools.transparent.R.menu.menu_main, menu)
         }
     }
 
@@ -90,7 +109,7 @@ class TransparentFragment @Inject constructor() : androidx.fragment.app.Fragment
         val id = item.itemId
 
         when (id) {
-            R.id.action_clear_logs -> {
+            fr.coppernic.tools.transparent.R.id.action_clear_logs -> {
                 logs.clear()
                 viewAdapter.notifyDataSetChanged()
                 binding.tvEmptyLogs.visibility = View.VISIBLE
@@ -116,6 +135,29 @@ class TransparentFragment @Inject constructor() : androidx.fragment.app.Fragment
         }
     }
 
+    private fun updateSpinner(context: Context?) {
+        if (context == null) return
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            serialPortViewModel.serialPortListFlow.collect { serialPortList ->
+                if (serialPortList != null) {
+                    val adapterPortIn = ArrayAdapter<String>(context, android.R.layout.simple_spinner_item )
+                    val adapterPortOut = ArrayAdapter<String>(context, android.R.layout.simple_spinner_item )
+                    serialPortList.map { serialPort ->
+                        adapterPortIn.add(serialPortViewModel.getSerialPortReference(serialPort))
+                        adapterPortOut.add(serialPortViewModel.getSerialPortReference(serialPort))
+                    }
+                    binding.spPortName.adapter = adapterPortIn
+                    binding.spPortOutName.adapter = adapterPortIn
+                }
+            }
+        }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            serialPortViewModel.updateSerialPortList()
+        }
+    }
+
     private fun initializeRecyclerView() {
         viewManager = LinearLayoutManager(activity)
         viewAdapter = LogAdapter(logs)
@@ -125,34 +167,6 @@ class TransparentFragment @Inject constructor() : androidx.fragment.app.Fragment
             layoutManager = viewManager
             addItemDecoration(DividerItemDecoration(this@TransparentFragment.context, LinearLayoutManager.VERTICAL))
             adapter = viewAdapter
-        }
-    }
-
-    private fun initializeSerialPorts() {
-        // In port instantiation
-        context?.let {
-            SerialFactory.getDirectInstance(it, object : InstanceListener<SerialCom> {
-                override fun onDisposed(p0: SerialCom?) {
-
-                }
-
-                override fun onCreated(p0: SerialCom?) {
-                    presenter.setPort(TransparentView.Port.IN, p0)
-                }
-            })
-        }
-
-        // Out port instantiation
-        context?.let {
-            SerialFactory.getDirectInstance(it, object : InstanceListener<SerialCom> {
-                override fun onDisposed(p0: SerialCom?) {
-
-                }
-
-                override fun onCreated(p0: SerialCom?) {
-                    presenter.setPort(TransparentView.Port.OUT, p0)
-                }
-            })
         }
     }
 
