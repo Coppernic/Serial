@@ -53,16 +53,7 @@ class TransparentFragment : androidx.fragment.app.Fragment(), TransparentView {
 
         binding.spPortOutName.setSelection(1)
 
-        enableSwOpen(false)
-
-//        presenter.setUp(this).subscribe {
-//            if(it) {
-                // Switch open is accessible
-                enableSwOpen(true)
-//            }
-//        }
-
-//        initializeSerialPorts()
+        enableSwOpen(true)
 
         updateSpinner(this.context)
 
@@ -72,14 +63,8 @@ class TransparentFragment : androidx.fragment.app.Fragment(), TransparentView {
                         binding.spPortInBaudrate.selectedItem.toString().toInt(),
                         binding.spPortOutName.selectedItem.toString(),
                         binding.spPortOutBaudrate.selectedItem.toString().toInt())
-
-//                presenter.openPorts(binding.spPortName.selectedItem.toString(),
-//                        binding.spPortInBaudrate.selectedItem.toString().toInt(),
-//                        binding.spPortOutName.selectedItem.toString(),
-//                        binding.spPortOutBaudrate.selectedItem.toString().toInt())
             } else {
                     serialPortViewModel.closePorts()
-//                presenter.closePorts()
             }
         }
 
