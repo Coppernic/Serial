@@ -12,6 +12,6 @@ import android.preference.PreferenceManager
 
 val androidModule by lazy {
     module {
-        single<SharedPreferences> { PreferenceManager.getDefaultSharedPreferences(androidContext()) }
+        single<SharedPreferences> { PreferenceManager.getDefaultSharedPreferences(get()) }
     }
 }

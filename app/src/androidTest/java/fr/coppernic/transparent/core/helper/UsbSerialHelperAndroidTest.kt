@@ -35,6 +35,8 @@ class UsbSerialHelperAndroidTest {
 
         Timber.d("usbserialList = $usbserialList")
 
+        // test with at least one device
+        assert(usbserialList.size > 0)
     }
 
 
@@ -45,6 +47,8 @@ class UsbSerialHelperAndroidTest {
 
         Timber.d("usbserialList = $usbserialList")
 
+        // test with at least one device
+        assert(usbserialList.size > 0)
     }
 
 }

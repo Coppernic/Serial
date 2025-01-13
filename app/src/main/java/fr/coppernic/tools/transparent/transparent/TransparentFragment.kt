@@ -3,7 +3,12 @@ package fr.coppernic.tools.transparent.transparent
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
@@ -23,7 +28,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 /**
  * A simple [Fragment] subclass.
  */
-class TransparentFragment : androidx.fragment.app.Fragment(), TransparentView {
+class TransparentFragment : Fragment(), TransparentView {
     private lateinit var viewAdapter: RecyclerView.Adapter<*>
     private lateinit var viewManager: RecyclerView.LayoutManager
     private var logs = ArrayList<String>()
@@ -34,8 +39,10 @@ class TransparentFragment : androidx.fragment.app.Fragment(), TransparentView {
 
     private lateinit var binding: FragmentTransparentBinding
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         binding = FragmentTransparentBinding.inflate(inflater, container, false)
         val view = binding.root
         return view
@@ -59,12 +66,14 @@ class TransparentFragment : androidx.fragment.app.Fragment(), TransparentView {
 
         binding.swOpen.setOnClickListener {
             if (binding.swOpen.isChecked) {
-                    serialPortViewModel.launchTransparentPortsMode(binding.spPortName.selectedItem.toString(),
-                        binding.spPortInBaudrate.selectedItem.toString().toInt(),
-                        binding.spPortOutName.selectedItem.toString(),
-                        binding.spPortOutBaudrate.selectedItem.toString().toInt())
+                serialPortViewModel.launchTransparentPortsMode(
+                    binding.spPortName.selectedItem.toString(),
+                    binding.spPortInBaudrate.selectedItem.toString().toInt(),
+                    binding.spPortOutName.selectedItem.toString(),
+                    binding.spPortOutBaudrate.selectedItem.toString().toInt()
+                )
             } else {
-                    serialPortViewModel.closePorts()
+                serialPortViewModel.closePorts()
             }
         }
 
@@ -85,7 +94,7 @@ class TransparentFragment : androidx.fragment.app.Fragment(), TransparentView {
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         activity.let {
-            it?.menuInflater?.inflate(fr.coppernic.tools.transparent.R.menu.menu_main, menu)
+            it?.menuInflater?.inflate(R.menu.menu_main, menu)
         }
     }
 
@@ -94,7 +103,7 @@ class TransparentFragment : androidx.fragment.app.Fragment(), TransparentView {
         val id = item.itemId
 
         when (id) {
-            fr.coppernic.tools.transparent.R.id.action_clear_logs -> {
+            R.id.action_clear_logs -> {
                 logs.clear()
                 viewAdapter.notifyDataSetChanged()
                 binding.tvEmptyLogs.visibility = View.VISIBLE
@@ -104,7 +113,7 @@ class TransparentFragment : androidx.fragment.app.Fragment(), TransparentView {
         return true
     }
 
-    private fun enableSwOpen(enable:Boolean) {
+    private fun enableSwOpen(enable: Boolean) {
         binding.swOpen.isEnabled = enable
     }
 
@@ -126,8 +135,10 @@ class TransparentFragment : androidx.fragment.app.Fragment(), TransparentView {
         viewLifecycleOwner.lifecycleScope.launch {
             serialPortViewModel.serialPortListFlow.collect { serialPortList ->
                 if (serialPortList != null) {
-                    val adapterPortIn = ArrayAdapter<String>(context, android.R.layout.simple_spinner_item )
-                    val adapterPortOut = ArrayAdapter<String>(context, android.R.layout.simple_spinner_item )
+                    val adapterPortIn =
+                        ArrayAdapter<String>(context, android.R.layout.simple_spinner_item)
+                    val adapterPortOut =
+                        ArrayAdapter<String>(context, android.R.layout.simple_spinner_item)
                     serialPortList.map { serialPort ->
                         adapterPortIn.add(serialPortViewModel.getSerialPortReference(serialPort))
                         adapterPortOut.add(serialPortViewModel.getSerialPortReference(serialPort))
@@ -150,13 +161,18 @@ class TransparentFragment : androidx.fragment.app.Fragment(), TransparentView {
         binding.rvLogs.apply {
             setHasFixedSize(true)
             layoutManager = viewManager
-            addItemDecoration(DividerItemDecoration(this@TransparentFragment.context, LinearLayoutManager.VERTICAL))
+            addItemDecoration(
+                DividerItemDecoration(
+                    this@TransparentFragment.context,
+                    LinearLayoutManager.VERTICAL
+                )
+            )
             adapter = viewAdapter
         }
     }
 
     override fun showError(error: TransparentView.Error) {
-        val message =  when (error) {
+        val message = when (error) {
             TransparentView.Error.OPEN_ERROR_PORT_IN -> R.string.error_open_port_in
             TransparentView.Error.OPEN_ERROR_PORT_OUT -> R.string.error_open_port_out
             TransparentView.Error.OK -> R.string.error_ok

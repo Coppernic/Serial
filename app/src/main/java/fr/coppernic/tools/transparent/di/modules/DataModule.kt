@@ -10,8 +10,8 @@ import org.koin.dsl.module
 
 val dataModule by lazy {
     module {
-        single<UsbSerialPortDataSource> { UsbSerialPortDataSourceImpl(get() , androidContext()) }
-        single<PhysicalSerialPortDataSource> { PhysicalSerialPortDataSourceImpl(androidContext()) }
-        single { UsbSerialHelper(androidContext()) }
+        single<UsbSerialPortDataSource> { UsbSerialPortDataSourceImpl(get() , get()) }
+        single<PhysicalSerialPortDataSource> { PhysicalSerialPortDataSourceImpl(get()) }
+        single { UsbSerialHelper(get()) }
     }
 }
