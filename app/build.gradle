@@ -6,8 +6,6 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 
-apply from: rootProject.file('gradle/publish-app.gradle')
-
 // ------------------- //
 // ---   KT Lint   --- //
 // ------------------- //
@@ -140,3 +138,8 @@ configurations.all {
         }
     }
 }
+
+
+apply from: rootProject.file('gradle/sign.gradle')
+apply from: rootProject.file('gradle/publish-app.gradle')
+
