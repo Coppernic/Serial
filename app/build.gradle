@@ -8,6 +8,11 @@ apply plugin: 'kotlin-kapt'
 
 apply from: rootProject.file('gradle/publish-app.gradle')
 
+// ------------------- //
+// ---   KT Lint   --- //
+// ------------------- //
+apply from: rootProject.file('gradle/ktlint.gradle')
+
 repositories {
     maven { url "https://nexus.coppernic.fr/repository/libs-release" }
     google()
