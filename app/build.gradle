@@ -4,7 +4,6 @@ plugins {
 
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 
 apply from: rootProject.file('gradle/publish-app.gradle')
@@ -21,14 +20,18 @@ android {
 
     defaultConfig {
         applicationId "fr.coppernic.tool.serial"
-        minSdkVersion 17
-        targetSdkVersion 32
+        minSdkVersion 27
+        targetSdkVersion 30
         versionCode versioning.info.versionCode
         versionName versioning.info.display
 
         vectorDrawables.useSupportLibrary = true
 
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
+
+        // Cleared between tests.
+        testInstrumentationRunnerArguments clearPackageData: 'true'
+
     }
 
     compileOptions {
@@ -42,17 +45,24 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-
     packagingOptions {
-        exclude 'META-INF/main.kotlin_module'
-        exclude 'META-INF/lib_release.kotlin_module'
+        resources {
+            excludes += ['META-INF/main.kotlin_module', 'META-INF/lib_release.kotlin_module']
+        }
     }
 
-    lintOptions {
+    buildFeatures {
+        viewBinding true
+    }
+
+    ndkVersion '24.0.8215888'
+    namespace 'fr.coppernic.tools.transparent'
+    lint {
         abortOnError false
     }
-    ndkVersion '24.0.8215888'
 }
+
+String koinVersion = "2.2.3"
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
@@ -66,20 +76,22 @@ dependencies {
     implementation 'androidx.recyclerview:recyclerview:1.1.0'
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
 
+    implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.5.1"
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'androidx.vectordrawable:vectordrawable:1.1.0'
     kapt 'androidx.lifecycle:lifecycle-compiler:2.2.0'
 
     // Coppernic
-    implementation 'fr.coppernic.sdk.cpcutils:CpcUtilsLib:6.19.1'
-    implementation 'fr.coppernic.sdk.core:CpcCore:1.10.2'
+    implementation 'fr.coppernic.sdk.cpcutils:CpcUtilsLib:6.21.0'
+    implementation 'fr.coppernic.sdk.core:CpcCore:3.5.0'
 
     // Ui
-    implementation 'com.github.Coppernic.AndroidSplashScreen:splash:0.4.1'
+//    implementation 'com.github.Coppernic.AndroidSplashScreen:splash:0.4.1'
+    implementation("com.github.coppernic:splash:0.4.1")
 
     // Timber
-    implementation 'com.jakewharton.timber:timber:4.7.1'
+    implementation 'com.jakewharton.timber:timber:5.0.1'
     implementation 'com.github.bastienpaulfr:Treessence:1.0.5'
 
     // RxJava
@@ -88,16 +100,28 @@ dependencies {
 
     // Dagger
     implementation 'com.google.dagger:dagger:2.25.2'
+
+    // Koin
+    implementation "io.insert-koin:koin-android:$koinVersion"
+    implementation "io.insert-koin:koin-androidx-scope:$koinVersion"
+    implementation "io.insert-koin:koin-androidx-viewmodel:$koinVersion"
+    implementation "io.insert-koin:koin-androidx-workmanager:$koinVersion"
+
+    implementation 'com.github.mik3y:usb-serial-for-android:3.8.1'
+
     kapt 'com.google.dagger:dagger-compiler:2.16'
 
-    testImplementation 'junit:junit:4.13'
+    testImplementation 'junit:junit:4.13.2'
     testImplementation 'org.hamcrest:hamcrest-all:1.3'
     testImplementation 'org.awaitility:awaitility:3.0.0'
-    testImplementation 'org.mockito:mockito-core:2.23.4'
-    testImplementation 'org.robolectric:robolectric:4.3.1'
+    testImplementation 'org.mockito:mockito-core:5.4.0'
+    testImplementation 'org.robolectric:robolectric:4.10.3'
+    testImplementation "io.insert-koin:koin-test:$koinVersion"
 
-    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
+    androidTestImplementation 'androidx.test.ext:junit:1.2.1'
     androidTestImplementation 'org.awaitility:awaitility:3.0.0'
+    androidTestImplementation "androidx.test:runner:1.6.2"
+    androidTestImplementation "io.insert-koin:koin-test:$koinVersion"
 
 }
 
