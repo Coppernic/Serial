@@ -84,7 +84,14 @@ class TerminalFragment : Fragment(), TerminalView {
 
         viewLifecycleOwner.lifecycleScope.launch {
             serialPortViewModel.portInData.collect { portData ->
-                addLog("<< " + CpcBytes.byteArrayToString(portData))
+                                                         when(settings.getCommunicationAscii()) {
+                                                             true -> {
+                                                                 addLog("<< " + CpcBytes.byteArrayToAsciiString(portData))
+                                                             }
+                                                             false -> {
+                                                                 addLog("<< " + CpcBytes.byteArrayToString(portData))
+                                                             }
+                                                         }
             }
         }
 
